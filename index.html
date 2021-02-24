@@ -4,10 +4,96 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Danny</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css"> -->
+    <link rel="stylesheet" type="text/css" href="./css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        $(".navbar-burger").click(function() {
+            $(".navbar-burger").toggleClass("is-active");
+            $(".navbar-menu").toggleClass("is-active");
+        });
+      });
+    </script>
   </head>
   <body>
-  <section class="section">
+    <nav class="navbar is-black" role="navigation" aria-label="main navigation">
+      <div class="navbar-brand">
+        <!-- <div class="navbar-burger burger" data-target="yourstandardnavbar"> -->
+        <div role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="yourstandardnavbar">
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+          <span aria-hidden="true"></span>
+        </div>
+      </div>
+
+      <div id="yourstandardnavbar" class="navbar-menu">
+        <div class="navbar-start">
+          <a class="navbar-item"><!--#href="#about"-->
+            <span>About</span>
+          </a>
+
+          <a class="navbar-item" href="./resume.pdf">
+            Resume
+          </a>
+
+          <a class="navbar-item" href="https://github.com/drogaar">
+            <span class="icon">
+                <i class="fab fa-github"></i>
+            </span>
+            <span>Github</span>
+          </a>
+        </div>
+
+        <!-- buttons example -->
+        <!-- <div class="navbar-end">
+          <div class="navbar-item">
+            <div class="buttons">
+              <a class="button is-primary">
+                <strong>Sign up</strong>
+              </a>
+              <a class="button is-light">
+                Log in
+              </a>
+            </div>
+          </div>
+        </div> -->
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <section class="hero is-black is-medium">
+      <!-- is-fullheight is-fullheight-with-navbar-->
+      <div class="hero-body">
+        <div class="container">
+          <!-- Hello! I am -->
+          <h1 class="title is-1">
+            Danny Rogaar
+          </h1>
+          <!-- <h2 class="subtitle is-3">
+            <strong>Bachelor AI</strong> - Experience with neural networks, machine learning and a special interest in visualisation.
+          </h2> -->
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="section" id="about">
+      <!-- Title -->
+      <div class="section-heading">
+        <!-- <h4 class="subtitle is-5">Jack of all trades, master of "some"</h4> -->
+        <div class="container">
+          <h3 class="title is-2">About</h3>
+          <p>
+            Hey, I am a master student <strong>AI</strong> currently looking for work and a place to improve. I have experience with neural networks, machine learning and have personally liked scientific visualisations. I've become good at python working on these topics.<br>For more info feel free to checkout my <a href="./resume.pdf">resume</a>!
+          </p>
+        </div>
+      </div>
+    </section>
+
+
+  <!-- <section class="section">
     <div class="container">
       <h1 class="title">
         Danny Rogaar
@@ -16,6 +102,6 @@
       <strong>Bachelor AI</strong> - Experience with neural networks, machine learning and a special interest in visualisation.
       </p>
     </div>
-  </section>
+  </section> -->
   </body>
 </html>

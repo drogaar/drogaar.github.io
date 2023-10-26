@@ -16,6 +16,8 @@
         });
       });
     </script>
+    <!--import oauth2 libaries for javascipt use-->
+    
   </head>
   <body>
     <nav class="navbar is-black" role="navigation" aria-label="main navigation">
@@ -43,6 +45,10 @@
             </span>
             <span>Github</span>
           </a>
+
+          <a class="navbar-item">
+            <span>Planning</span>
+          </a>
         </div>
       </div>
     </nav>
@@ -69,5 +75,25 @@
         </div>
       </div>
     </section>
+
+    <!-- Planning-->
+    <section class="section" id="planning">
+      <div class="section-heading">
+        <div class="container">
+          <h3 class="title is-2">Planning</h3>
+          <p>
+            <!--most basic google calendar embed here: -->
+            <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23ffffff&ctz=Europe%2FAmsterdam&src=ZGFubnlyb2dhYXJAZ21haWwuY29t&src=YWRkcmVzc2Jvb2sjY29udGFjdHNAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&src=bmwuZHV0Y2gjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&src=ZW4uZHV0Y2gjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&src=c3JhZWdsY2xhbjhxNm01NTFqYzFnbjZubHQ2MWZrM2FAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%237986CB&color=%2333B679&color=%230B8043&color=%230B8043&color=%23EF6C00" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+            <!-- step 1: setup oauth so that user will afterwards be able to see their own events-->
+
+            <!-- step 2: make a google calendar api call to get the events of the user -->
+            <!-- step 3: parse the events to a json format -->
+            <!-- step 4: display the events in the website -->
+            
+          </p>
+          </div>  
+        </div>
+    </section>
+
   </body>
 </html>

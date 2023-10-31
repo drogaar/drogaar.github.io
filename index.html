@@ -25,6 +25,14 @@
       var client;
       var access_token;
 
+      var EventType = {
+        0:"nothing",
+        1:"work",
+        2:"programming",
+        3:"holiday",
+        4:"other"
+      }
+
       function initClient(){
         client = google.accounts.oauth2.initTokenClient({
           client_id: '616265016561-of2t07oji032h5al2nuu1ehu4ms8ic8m.apps.googleusercontent.com',
@@ -49,8 +57,43 @@
         xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
         xhr.send();
 
+        // check start, end , summary
+        var eventPool = new Object();
+
+        function gatherEvents(xmlObject){
+          for(let i =0;i<xmlObject.items;i++){
+            event = xmlObject.items[i];
+
+            // check if event is in the past
+            let current_time = new Date();
+            let timestamp_end = utc(new Date(event.end.dateTime));
+            if(timestamp_end < utc(current_time)) continue;
+
+            let timestamp_start = utc(new Date(event.start.dateTime));
+            // check if event summary contains word "work" or "vakantie"
+            let event_summary = event.summary.toLowerCase();
+            let category = 4;
+            if(event_summary.includes("vakantie")) category = 3;
+            if(event_summary.includes("work")) category = 1;
+
+            let event_dt = new Date(timestamp_start);
+            eventPool[event_dt.getDate() + "-" + (event_dt.getMonth()+1) + "-" + event_dt.getFullYear()] = category;
+
+            // add an event for every day of multi day events.
+            // for(let d = timestamp_start; d < timestamp_end; d += 1000*60*60*24*1){
+            //   eventPool[new Date(d)] = category;
+            // }
+
+          }
+          
+
+        }
+
         xhr.onload = function() {
-          console.log(`Loaded: ${xhr.status} ${xhr.response}`);
+          // console.log(`Loaded: ${xhr.status} ${xhr.response}`);
+          let returnedEvents = JSON.parse(xhr.response);
+          gatherEvents(returnedEvents);
+          drawCalendar();
         };
       }
 
@@ -235,12 +278,12 @@
 
             function checkForEvent(datetime){
               // returns a event Enum representing the given date.
-              const EventType = {
-                0:"nothing",
-                1:"work",
-                2:"programming",
-                3:"holiday"
-              }
+              // const EventType = {
+              //   0:"nothing",
+              //   1:"work",
+              //   2:"programming",
+              //   3:"holiday"
+              // }
 
               function within(date, start, end){
                 return utc(start) < utc(date) < utc(end);
@@ -260,7 +303,7 @@
               if(datetime.getDay()===0){
                 return EventType[0];
               }// no work on sundays
-              if(datetime in eventPool){
+              if((datetime.getDate() + "-" + (datetime.getMonth+1) + "-" + datetime.getFullYear()) in eventPool){
                 return EventType[1];
               }// SNS
               return EventType[2]; //weekday, lets finish the project
@@ -272,6 +315,8 @@
             addDay(-2, -1, "", classname="day_hspace");
             for(let i=0;i<7;i++) addDay(-2, i, Weekdays[i]);
             addWeek(-1);
+
+            console.log("eventPool: " + eventPool);
 
             for(let w=0; w<52; w++){
               let w_ = (w + current_week) % 52;

@@ -1,0 +1,27 @@
+.calendar {
+    display: flex;
+    flex-wrap: wrap;
+    width: 70%;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.week {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    margin: 5px;
+}
+
+.day {
+    flex: 1;
+    border: 1px solid;
+    text-align: center;
+    margin: 5px;
+}
+
+.day_hspace {
+    flex: 1;
+    border: 0px;
+    margin: 5px;
+}

@@ -6,6 +6,7 @@
     <title>Danny</title>
     <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css"> -->
     <link rel="stylesheet" type="text/css" href="./css/bulma.min.css">
+    <link rel="stylesheet" type="text/css" href="./css/calendar.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
@@ -16,7 +17,56 @@
         });
       });
     </script>
-    <!--import oauth2 libaries for javascipt use-->
+    <!-- <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script> -->
+    <!-- <script async defer src="https://apis.google.com/js/api.js"></script> -->
+    <!-- <script src="https://accounts.google.com/gsi/client" defer></script> -->
+    <script src="https://accounts.google.com/gsi/client" onload="initClient()" async defer></script>
+    <script>
+      var client;
+      var access_token;
+
+      function initClient(){
+        client = google.accounts.oauth2.initTokenClient({
+          client_id: '616265016561-of2t07oji032h5al2nuu1ehu4ms8ic8m.apps.googleusercontent.com',
+          scope: 'https://www.googleapis.com/auth/calendar.events.readonly',
+          callback: (tokenResponse)=>{
+            access_token = tokenResponse.access_token;
+          }
+        })
+      }
+
+      function getToken(){
+        client.requestAccessToken();
+      }
+
+      function revokeToken(){
+        google.accounts.oauth2.revoke(access_token, ()=>{console.log('access token revoked')});
+      }
+
+      function loadCalendar() {
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/primary/events')
+        xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
+        xhr.send();
+
+        xhr.onload = function() {
+          console.log(`Loaded: ${xhr.status} ${xhr.response}`);
+        };
+      }
+
+      // req.addEventListener("error", transferFailed);
+      
+    </script>
+    
+    <!-- <script>
+      window.onload = function () {
+        google.accounts.id.initialize({
+          client_id: '616265016561-of2t07oji032h5al2nuu1ehu4ms8ic8m.apps.googleusercontent.com',
+          callback: handleCredentialResponse
+        });
+        google.accounts.id.prompt();
+      };
+    </script> -->
     
   </head>
   <body>
@@ -50,6 +100,22 @@
             <span>Planning</span>
           </a>
         </div>
+
+        <div class="navbar-end">
+          <!-- <div class="buttons"> -->
+            <!-- <button class="button is-dark" onclick="getToken()"> Get access token</button> -->
+            <a class="navbar-item" onclick="getToken()">
+              <span>Authorise your google</span>
+            </a>
+            <a class="navbar-item" onclick="loadCalendar()">
+              <span>Load calendar</span>
+            </a>
+            <a class="navbar-item" onclick="revokeToken()">
+              <span>Revoke google</span>
+            </a>
+            <!-- <button class="button is-dark is-inverted" onclick="revokeToken()"> Revoke token</button> -->
+          <!-- </div> -->
+        </div>
       </div>
     </nav>
 
@@ -77,22 +143,163 @@
     </section>
 
     <!-- Planning-->
-    <section class="section" id="planning">
+    <!-- <section class="section" id="planning">
       <div class="section-heading">
         <div class="container">
           <h3 class="title is-2">Planning</h3>
-          <p>
+          <p> -->
             <!--most basic google calendar embed here: -->
-            <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23ffffff&ctz=Europe%2FAmsterdam&src=ZGFubnlyb2dhYXJAZ21haWwuY29t&src=YWRkcmVzc2Jvb2sjY29udGFjdHNAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&src=bmwuZHV0Y2gjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&src=ZW4uZHV0Y2gjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&src=c3JhZWdsY2xhbjhxNm01NTFqYzFnbjZubHQ2MWZrM2FAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%237986CB&color=%2333B679&color=%230B8043&color=%230B8043&color=%23EF6C00" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe>
+            <!-- <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23ffffff&ctz=Europe%2FAmsterdam&src=ZGFubnlyb2dhYXJAZ21haWwuY29t&src=YWRkcmVzc2Jvb2sjY29udGFjdHNAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&src=bmwuZHV0Y2gjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&src=ZW4uZHV0Y2gjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&src=c3JhZWdsY2xhbjhxNm01NTFqYzFnbjZubHQ2MWZrM2FAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%237986CB&color=%2333B679&color=%230B8043&color=%230B8043&color=%23EF6C00" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe> -->
             <!-- step 1: setup oauth so that user will afterwards be able to see their own events-->
 
             <!-- step 2: make a google calendar api call to get the events of the user -->
             <!-- step 3: parse the events to a json format -->
             <!-- step 4: display the events in the website -->
+
             
-          </p>
+            
+          <!-- </p>
           </div>  
         </div>
+    </section> -->
+
+    <!-- <section class="section" id="Planning">
+      <div class="calendar">
+        <div class="week">
+            <div class="day">1</div>
+            <div class="day">2</div>
+            <div class="day">3</div>
+            <div class="day">4</div>
+            <div class="day">5</div>
+            <div class="day">6</div>
+            <div class="day">7</div>
+        </div>
+        <div class="week">
+          <div class="day">1</div>
+          <div class="day">2</div>
+          <div class="day">3</div>
+          <div class="day">4</div>
+          <div class="day">5</div>
+          <div class="day">6</div>
+          <div class="day">7</div>
+      </div>
+    </div>
+    </section> -->
+
+    <section class="section">
+      <div class="calendar"  id="planning_auto">
+        <script>
+          function drawCalendar(){
+
+
+
+            // get current date
+            let current_date = new Date();
+            console.log("current_date" + current_date.toString());
+            console.log("current_date+3" + (current_date + 3).toString());
+            let startDate = new Date(current_date.getFullYear(), 0, 1);
+            let days = Math.floor((current_date - startDate) / (24*60*60*1000));
+            let current_week = Math.ceil(days / 7);
+
+            const Weekdays = {
+              0:"Mo",
+              1:"Tu",
+              2:"We",
+              3:"Th",
+              4:"Fr",
+              5:"Sa",
+              6:"Su",
+            }
+
+            function utc(datetime){
+              return Date.UTC(datetime.getFullYear(), datetime.getMonth(), datetime.getDate());
+            }
+
+            function addWeek(weekNumber){
+              let week = document.createElement("div");
+              week.className = "week";
+              // div.innerHTML="";
+              week.id="w" + weekNumber;
+              document.getElementById("planning_auto").appendChild(week);
+              // console.log("created: " + weekNumber);
+            }
+
+            function addDay(weekNumber, dayNumber, text, classname="day"){
+              let day = document.createElement("div");
+              day.className = classname;
+              day.innerHTML=text;
+              day.id="w" + weekNumber + "d" + dayNumber;
+              // console.log("finding: " + "w" + weekNumber);
+              document.getElementById("w" + weekNumber).appendChild(day);
+            }
+
+            function checkForEvent(datetime){
+              // returns a event Enum representing the given date.
+              const EventType = {
+                0:"nothing",
+                1:"work",
+                2:"programming",
+                3:"holiday"
+              }
+
+              function within(date, start, end){
+                return utc(start) < utc(date) < utc(end);
+              }
+
+              holiday1_start = new Date(2023, 11, 24);
+              holiday1_end = new Date(2024, 0, 4);
+              holiday2_start = new Date(2024, 6, 14);
+              holiday2_end = new Date(2024, 7, 29);
+
+              if(within(datetime, holiday1_start, holiday1_end)){
+                return EventType[3];
+              }
+              if(within(datetime, holiday2_start, holiday2_end)){
+                return EventType[3];
+              }
+              if(datetime.getDay()===0){
+                return EventType[0];
+              }// no work on sundays
+              if(datetime in eventPool){
+                return EventType[1];
+              }// SNS
+              return EventType[2]; //weekday, lets finish the project
+            }
+
+            // Calendar Header
+            addWeek(-2);
+            addDay(-2, -2, "week No");
+            addDay(-2, -1, "", classname="day_hspace");
+            for(let i=0;i<7;i++) addDay(-2, i, Weekdays[i]);
+            addWeek(-1);
+
+            for(let w=0; w<52; w++){
+              let w_ = (w + current_week) % 52;
+
+              addWeek(w);
+              addDay(w, -2, w_);
+              addDay(w, -1, "", classname="day_hspace");
+
+              starting_weekday = (current_date.getDay() - 1) % 7;
+              for(let d=0; d<7; d++){
+                if(w===0 && d < starting_weekday){
+                  addDay(w, d, "", classname="day_hspace");
+                  continue;
+                }
+
+                // let future_date = new Date(current_date.getUTCMilliseconds() + 1000*60*60*24*(d + w*7));
+                // let future_date = new Date(current_date.getUTCMilliseconds());
+                let future_date = new Date(utc(current_date) + 1000*60*60*24*(w*7 + d - starting_weekday));
+                // future_date.setDate(current_date.getDate() + (d + w*7));
+                // console.log(future_date.toString());
+                addDay(w, d, future_date.getDate() + "-" + (future_date.getMonth()+1));
+              }
+            }
+          }
+
+          drawCalendar();
+        </script>
+      </div>
     </section>
 
   </body>

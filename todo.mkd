@@ -1,0 +1,13 @@
+# Todo
+- format calendar properly
+- clean code
+- proper website tab and google buttons
+
+### UI
+- Get colors via api
+- Set events colors appropriately
+- add Legend
+- replace innertext months with background text indication?
+
+### Features
+- be able to show multiple events ? [allocated holiday and work]

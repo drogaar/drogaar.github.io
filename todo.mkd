@@ -1,15 +1,15 @@
 # Todo
-- format calendar properly
-- clean code
-- proper website tab and google buttons
+[] format calendar properly
+[x] clean code
+[] proper website tab and google buttons
 
 ### UI
-- Get colors via api
-- Set events colors appropriately
-- add Legend
-- replace innertext months with background text indication?
+[] Get colors via api
+[] Set events colors appropriately
+[] add Legend
+[] replace innertext months with background text indication?
 
 ### Features
-- add a day event for every day of multi day events.
-- be able to show multiple events ? [allocated holiday and work]
-- Use modern js, api and callback 
+[] add a day event for every day of multi day events.
+[] be able to show multiple events ? [allocated holiday and work]
+[] Use modern js, api and callback 

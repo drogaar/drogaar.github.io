@@ -54,6 +54,43 @@
         return Date.UTC(datetime.getFullYear(), datetime.getMonth(), datetime.getDate());
       }
 
+      function checkForEvent(datetime){
+        // const EventType = {
+        //   0:"nothing",
+        //   1:"work",
+        //   2:"programming",
+        //   3:"holiday"
+        //   4:"other"
+        // }
+
+        function within(date, start, end){
+          return utc(start) < utc(date) && utc(date) < utc(end);
+        }
+
+        holiday1_start = new Date(2023, 11, 24);//+1 on day and month
+        holiday1_end = new Date(2024, 0, 4);
+        holiday2_start = new Date(2024, 6, 14);
+        holiday2_end = new Date(2024, 7, 29);
+
+        if(within(datetime, holiday1_start, holiday1_end)){
+          return EventType[3];
+        }
+        if(within(datetime, holiday2_start, holiday2_end)){
+          return EventType[3];
+        }
+        if(datetime.getDay()===0){
+          return EventType[0];
+        }// no work on sundays
+
+        let datestr = datetime.getDate() + "-" + (datetime.getMonth()+1) + "-" + datetime.getFullYear();
+        if(datestr in eventPool){
+          console.log("found event: " + eventPool[datestr]);
+          return eventPool[datestr];
+        }
+        
+        return EventType[2];
+      }
+
       function loadCalendar() {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/primary/events')
@@ -69,11 +106,11 @@
 
             let current_time = new Date();
             let timestamp_end = utc(new Date(event.end.dateTime));
-            if(isNaN(timestamp_end) || timestamp_end < utc(current_time)){
+            if(isNaN(timestamp_end)){
               console.log(i + " skipped: " + event + " DT:" + event.end.dateTime);
               continue;
             }
-            // if(timestamp_end < utc(current_time)) continue;
+            if(timestamp_end < utc(current_time)) continue;
 
             let timestamp_start = utc(new Date(event.start.dateTime));
 
@@ -178,73 +215,43 @@
     <section class="section">
       <div class="calendar"  id="planning_auto">
         <script>
+          function addWeek(weekNumber){
+            let week = document.createElement("div");
+            week.className = "week";
+            week.id="w" + weekNumber;
+            document.getElementById("planning_auto").appendChild(week);
+          }
+
+          function addDay(weekNumber, dayNumber, text, classname="day", category=0){
+            let day = document.createElement("div");
+            day.className = classname;
+            day.innerHTML=text;
+            day.id="w" + weekNumber + "d" + dayNumber;
+
+            const colors = ["#0099cc","#E6E6FA","#fde2a3","#cfdfc4","#f6c2a8","#1C8200","#987baa","#981890","#AA8971","#1987FC","#99081E"];
+            if(category==EventType[1]) day.style.backgroundColor = colors[1];
+            if(category==EventType[2]) day.style.backgroundColor = colors[2];
+            if(category==EventType[3]) day.style.backgroundColor = colors[3];
+            if(category==EventType[4]) day.style.backgroundColor = colors[4];
+
+            document.getElementById("w" + weekNumber).appendChild(day);
+          }
+
           function drawCalendar(){
             const Weekdays = {0:"Mo", 1:"Tu", 2:"We", 3:"Th", 4:"Fr", 5:"Sa", 6:"Su",}
 
-            // get current date
+            //empty current calendar if any
+            let calendar = document.getElementById("planning_auto")
+            let content = calendar.lastElementChild;  
+            while (content) { 
+              calendar.removeChild(content); 
+              content = calendar.lastElementChild; 
+            }
+
             let current_date = new Date();
             let startDate = new Date(current_date.getFullYear(), 0, 1);
             let days = Math.floor((current_date - startDate) / (24*60*60*1000));
             let current_week = Math.ceil(days / 7);
-
-            function addWeek(weekNumber){
-              let week = document.createElement("div");
-              week.className = "week";
-              week.id="w" + weekNumber;
-              document.getElementById("planning_auto").appendChild(week);
-            }
-
-            function addDay(weekNumber, dayNumber, text, classname="day", category=0){
-              let day = document.createElement("div");
-              day.className = classname;
-              day.innerHTML=text;
-              day.id="w" + weekNumber + "d" + dayNumber;
-
-              const colors = ["#0099cc","#E6E6FA","#fde2a3","#cfdfc4","#f6c2a8","#1C8200","#987baa","#981890","#AA8971","#1987FC","#99081E"];
-              if(category==EventType[1]) day.style.backgroundColor = colors[1];
-              if(category==EventType[2]) day.style.backgroundColor = colors[2];
-              if(category==EventType[3]) day.style.backgroundColor = colors[3];
-              if(category==EventType[4]) day.style.backgroundColor = colors[4];
-
-              document.getElementById("w" + weekNumber).appendChild(day);
-            }
-
-            function checkForEvent(datetime){
-              // const EventType = {
-              //   0:"nothing",
-              //   1:"work",
-              //   2:"programming",
-              //   3:"holiday"
-              //   4:"other"
-              // }
-
-              function within(date, start, end){
-                return utc(start) < utc(date) && utc(date) < utc(end);
-              }
-
-              holiday1_start = new Date(2023, 11, 24);//+1 on day and month
-              holiday1_end = new Date(2024, 0, 4);
-              holiday2_start = new Date(2024, 6, 14);
-              holiday2_end = new Date(2024, 7, 29);
-
-              if(within(datetime, holiday1_start, holiday1_end)){
-                return EventType[3];
-              }
-              if(within(datetime, holiday2_start, holiday2_end)){
-                return EventType[3];
-              }
-              if(datetime.getDay()===0){
-                return EventType[0];
-              }// no work on sundays
-
-              let datestr = datetime.getDate() + "-" + (datetime.getMonth()+1) + "-" + datetime.getFullYear();
-              if(datestr in eventPool){
-                console.log("found event: " + eventPool[datestr]);
-                return eventPool[datestr];
-              }
-              
-              return EventType[2];
-            }
 
             // Calendar Header
             addWeek(-2);
@@ -256,10 +263,8 @@
             console.log("eventPool: " + eventPool.toString());
 
             for(let w=0; w<52; w++){
-              let w_ = (w + current_week) % 52;
-
               addWeek(w);
-              addDay(w, -2, w_);
+              addDay(w, -2, (w + current_week) % 52);
               addDay(w, -1, "", classname="day_hspace");
 
               starting_weekday = (current_date.getDay() - 1) % 7;

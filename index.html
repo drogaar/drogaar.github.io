@@ -17,9 +17,6 @@
         });
       });
     </script>
-    <!-- <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script> -->
-    <!-- <script async defer src="https://apis.google.com/js/api.js"></script> -->
-    <!-- <script src="https://accounts.google.com/gsi/client" defer></script> -->
     <script src="https://accounts.google.com/gsi/client" onload="initClient()" async defer></script>
     <script>
       var client;
@@ -63,61 +60,39 @@
         xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
         xhr.send();
 
-        // check start, end , summary
-
         function gatherEvents(xmlObject){
-          console.log("gathering...");
-          // console.log("gathering: " + xmlObject.items.toString());
-          // for(let i =0;i<xmlObject.items;i++){
           for(const [i, event] of Object.entries(xmlObject.items)){
             if(event.end === undefined){
-              console.log(i + " skipped");
-              console.log(event);
+              console.log(i + " skipped: " + event);
               continue;
             } 
-            // event = xmlObject.items[i];
-
-            // check if event is in the past
-            console.log("event: " + event.end);
 
             let current_time = new Date();
             let timestamp_end = utc(new Date(event.end.dateTime));
-
-            if(isNaN(timestamp_end)){
-              console.log(i + " skipped");
-              console.log(event);
-              console.log(event.end);
-              console.log(event.end.dateTime);
+            if(isNaN(timestamp_end) || timestamp_end < utc(current_time)){
+              console.log(i + " skipped: " + event + " DT:" + event.end.dateTime);
               continue;
             }
-            
-            if(timestamp_end < utc(current_time)) continue;
-
-            // console.log("ts end: " + timestamp_end);
+            // if(timestamp_end < utc(current_time)) continue;
 
             let timestamp_start = utc(new Date(event.start.dateTime));
+
             // check if event summary contains word "work" or "vakantie"
-            
             let event_summary = event.summary.toLowerCase();
             let category = EventType[4];
             if(event_summary.includes("vakantie")) category = EventType[3];
             if(event_summary.includes("werk")) category = EventType[1];
-
             console.log("event type: " + category + ". found: " + event_summary);
 
             let event_dt = new Date(timestamp_start);
             let str = event_dt.getDate() + "-" + (event_dt.getMonth()+1) + "-" + event_dt.getFullYear();
-            // console.log("datestring: " + str);
             eventPool[str] = category;
 
             // add an event for every day of multi day events.
             // for(let d = timestamp_start; d < timestamp_end; d += 1000*60*60*24*1){
             //   eventPool[new Date(d)] = category;
             // }
-
           }
-          
-
         }
 
         xhr.onload = function() {
@@ -127,20 +102,8 @@
           drawCalendar();
         };
       }
-
-      // req.addEventListener("error", transferFailed);
       
     </script>
-    
-    <!-- <script>
-      window.onload = function () {
-        google.accounts.id.initialize({
-          client_id: '616265016561-of2t07oji032h5al2nuu1ehu4ms8ic8m.apps.googleusercontent.com',
-          callback: handleCredentialResponse
-        });
-        google.accounts.id.prompt();
-      };
-    </script> -->
     
   </head>
   <body>
@@ -176,19 +139,15 @@
         </div>
 
         <div class="navbar-end">
-          <!-- <div class="buttons"> -->
-            <!-- <button class="button is-dark" onclick="getToken()"> Get access token</button> -->
-            <a class="navbar-item" onclick="getToken()">
-              <span>Authorise your google</span>
-            </a>
-            <a class="navbar-item" onclick="loadCalendar()">
-              <span>Load calendar</span>
-            </a>
-            <a class="navbar-item" onclick="revokeToken()">
-              <span>Revoke google</span>
-            </a>
-            <!-- <button class="button is-dark is-inverted" onclick="revokeToken()"> Revoke token</button> -->
-          <!-- </div> -->
+          <a class="navbar-item" onclick="getToken()">
+            <span>Authorise your google</span>
+          </a>
+          <a class="navbar-item" onclick="loadCalendar()">
+            <span>Load calendar</span>
+          </a>
+          <a class="navbar-item" onclick="revokeToken()">
+            <span>Revoke google</span>
+          </a>
         </div>
       </div>
     </nav>
@@ -216,116 +175,41 @@
       </div>
     </section>
 
-    <!-- Planning-->
-    <!-- <section class="section" id="planning">
-      <div class="section-heading">
-        <div class="container">
-          <h3 class="title is-2">Planning</h3>
-          <p> -->
-            <!--most basic google calendar embed here: -->
-            <!-- <iframe src="https://calendar.google.com/calendar/embed?height=600&wkst=1&bgcolor=%23ffffff&ctz=Europe%2FAmsterdam&src=ZGFubnlyb2dhYXJAZ21haWwuY29t&src=YWRkcmVzc2Jvb2sjY29udGFjdHNAZ3JvdXAudi5jYWxlbmRhci5nb29nbGUuY29t&src=bmwuZHV0Y2gjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&src=ZW4uZHV0Y2gjaG9saWRheUBncm91cC52LmNhbGVuZGFyLmdvb2dsZS5jb20&src=c3JhZWdsY2xhbjhxNm01NTFqYzFnbjZubHQ2MWZrM2FAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%237986CB&color=%2333B679&color=%230B8043&color=%230B8043&color=%23EF6C00" style="border:solid 1px #777" width="800" height="600" frameborder="0" scrolling="no"></iframe> -->
-            <!-- step 1: setup oauth so that user will afterwards be able to see their own events-->
-
-            <!-- step 2: make a google calendar api call to get the events of the user -->
-            <!-- step 3: parse the events to a json format -->
-            <!-- step 4: display the events in the website -->
-
-            
-            
-          <!-- </p>
-          </div>  
-        </div>
-    </section> -->
-
-    <!-- <section class="section" id="Planning">
-      <div class="calendar">
-        <div class="week">
-            <div class="day">1</div>
-            <div class="day">2</div>
-            <div class="day">3</div>
-            <div class="day">4</div>
-            <div class="day">5</div>
-            <div class="day">6</div>
-            <div class="day">7</div>
-        </div>
-        <div class="week">
-          <div class="day">1</div>
-          <div class="day">2</div>
-          <div class="day">3</div>
-          <div class="day">4</div>
-          <div class="day">5</div>
-          <div class="day">6</div>
-          <div class="day">7</div>
-      </div>
-    </div>
-    </section> -->
-
     <section class="section">
       <div class="calendar"  id="planning_auto">
         <script>
           function drawCalendar(){
-
-
+            const Weekdays = {0:"Mo", 1:"Tu", 2:"We", 3:"Th", 4:"Fr", 5:"Sa", 6:"Su",}
 
             // get current date
             let current_date = new Date();
-            console.log("current_date" + current_date.toString());
-            console.log("current_date+3" + (current_date + 3).toString());
             let startDate = new Date(current_date.getFullYear(), 0, 1);
             let days = Math.floor((current_date - startDate) / (24*60*60*1000));
             let current_week = Math.ceil(days / 7);
 
-            const Weekdays = {
-              0:"Mo",
-              1:"Tu",
-              2:"We",
-              3:"Th",
-              4:"Fr",
-              5:"Sa",
-              6:"Su",
-            }
-
             function addWeek(weekNumber){
               let week = document.createElement("div");
               week.className = "week";
-              // div.innerHTML="";
               week.id="w" + weekNumber;
               document.getElementById("planning_auto").appendChild(week);
-              // console.log("created: " + weekNumber);
             }
 
             function addDay(weekNumber, dayNumber, text, classname="day", category=0){
-              console.log("event type T2: " + category);
-
               let day = document.createElement("div");
               day.className = classname;
               day.innerHTML=text;
               day.id="w" + weekNumber + "d" + dayNumber;
-              // let txt = "empty";
-              // if(category!=0) day.innerHTML = day.innerHTML + "+++"
-              const colors = ["#0099cc","#c0c0c0","#587b2e","#990000","#000000","#1C8200","#987baa","#981890","#AA8971","#1987FC","#99081E"];
-              if(category==EventType[1]) day.style.backgroundColor = colors[1];//rgb(0, 0, 255);
-              if(category==EventType[2]) day.style.backgroundColor = colors[2];//rgb(255, 0, 0);
-              if(category==EventType[3]) day.style.backgroundColor = colors[3];//rgb(0, 255, 0);
-              if(category==EventType[4]) day.style.backgroundColor = colors[3];//rgb(255, 255, 0);
 
-              // if(category==1) day.innerHTML="WORK";
-              // if(category==3) day.innerHTML="HOLIDAY";
-              // if(category==4) day.innerHTML="OTHER";
+              const colors = ["#0099cc","#E6E6FA","#fde2a3","#cfdfc4","#f6c2a8","#1C8200","#987baa","#981890","#AA8971","#1987FC","#99081E"];
+              if(category==EventType[1]) day.style.backgroundColor = colors[1];
+              if(category==EventType[2]) day.style.backgroundColor = colors[2];
+              if(category==EventType[3]) day.style.backgroundColor = colors[3];
+              if(category==EventType[4]) day.style.backgroundColor = colors[4];
 
-              // if(category===EventType[1]){txt="WORK";} else
-              // if(category===EventType[3]){txt="HOLIDAY";} else 
-              // if(category===EventType[4]){txt="OTHER";} else 
-              // {txt = text};
-
-              // day.innerHTML=txt;
-
-              // console.log("finding: " + "w" + weekNumber);
               document.getElementById("w" + weekNumber).appendChild(day);
             }
 
             function checkForEvent(datetime){
-              // returns a event Enum representing the given date.
               // const EventType = {
               //   0:"nothing",
               //   1:"work",
@@ -344,23 +228,22 @@
               holiday2_end = new Date(2024, 7, 29);
 
               if(within(datetime, holiday1_start, holiday1_end)){
-                console.log("h1");
                 return EventType[3];
               }
               if(within(datetime, holiday2_start, holiday2_end)){
-                console.log("h2");
                 return EventType[3];
               }
               if(datetime.getDay()===0){
                 return EventType[0];
               }// no work on sundays
+
               let datestr = datetime.getDate() + "-" + (datetime.getMonth()+1) + "-" + datetime.getFullYear();
               if(datestr in eventPool){
                 console.log("found event: " + eventPool[datestr]);
                 return eventPool[datestr];
-              }// SNS
+              }
               
-              return EventType[2]; //weekday, lets finish the project
+              return EventType[2];
             }
 
             // Calendar Header
@@ -386,17 +269,9 @@
                   continue;
                 }
 
-                // let future_date = new Date(current_date.getUTCMilliseconds() + 1000*60*60*24*(d + w*7));
-                // let future_date = new Date(current_date.getUTCMilliseconds());
                 let future_date = new Date(utc(current_date) + 1000*60*60*24*(w*7 + d - starting_weekday));
-                // future_date.setDate(current_date.getDate() + (d + w*7));
-                // console.log(future_date.toString());
                 let cat = checkForEvent(future_date);
-
-
-                // console.log("event type: " + cat);
                 addDay(w, d, future_date.getDate() + "-" + (future_date.getMonth()+1), classname="day", category=cat);
-                // addDay(w, d, future_date.getDate() + "-" + (future_date.getMonth()+1));
               }
             }
           }

@@ -33,6 +33,8 @@
         4:"other"
       }
 
+      var eventPool = new Object();
+
       function initClient(){
         client = google.accounts.oauth2.initTokenClient({
           client_id: '616265016561-of2t07oji032h5al2nuu1ehu4ms8ic8m.apps.googleusercontent.com',
@@ -51,6 +53,10 @@
         google.accounts.oauth2.revoke(access_token, ()=>{console.log('access token revoked')});
       }
 
+      function utc(datetime){
+        return Date.UTC(datetime.getFullYear(), datetime.getMonth(), datetime.getDate());
+      }
+
       function loadCalendar() {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/primary/events')
@@ -58,26 +64,51 @@
         xhr.send();
 
         // check start, end , summary
-        var eventPool = new Object();
 
         function gatherEvents(xmlObject){
-          for(let i =0;i<xmlObject.items;i++){
-            event = xmlObject.items[i];
+          console.log("gathering...");
+          // console.log("gathering: " + xmlObject.items.toString());
+          // for(let i =0;i<xmlObject.items;i++){
+          for(const [i, event] of Object.entries(xmlObject.items)){
+            if(event.end === undefined){
+              console.log(i + " skipped");
+              console.log(event);
+              continue;
+            } 
+            // event = xmlObject.items[i];
 
             // check if event is in the past
+            console.log("event: " + event.end);
+
             let current_time = new Date();
             let timestamp_end = utc(new Date(event.end.dateTime));
+
+            if(isNaN(timestamp_end)){
+              console.log(i + " skipped");
+              console.log(event);
+              console.log(event.end);
+              console.log(event.end.dateTime);
+              continue;
+            }
+            
             if(timestamp_end < utc(current_time)) continue;
+
+            // console.log("ts end: " + timestamp_end);
 
             let timestamp_start = utc(new Date(event.start.dateTime));
             // check if event summary contains word "work" or "vakantie"
+            
             let event_summary = event.summary.toLowerCase();
-            let category = 4;
-            if(event_summary.includes("vakantie")) category = 3;
-            if(event_summary.includes("work")) category = 1;
+            let category = EventType[4];
+            if(event_summary.includes("vakantie")) category = EventType[3];
+            if(event_summary.includes("werk")) category = EventType[1];
+
+            console.log("event type: " + category + ". found: " + event_summary);
 
             let event_dt = new Date(timestamp_start);
-            eventPool[event_dt.getDate() + "-" + (event_dt.getMonth()+1) + "-" + event_dt.getFullYear()] = category;
+            let str = event_dt.getDate() + "-" + (event_dt.getMonth()+1) + "-" + event_dt.getFullYear();
+            // console.log("datestring: " + str);
+            eventPool[str] = category;
 
             // add an event for every day of multi day events.
             // for(let d = timestamp_start; d < timestamp_end; d += 1000*60*60*24*1){
@@ -254,10 +285,6 @@
               6:"Su",
             }
 
-            function utc(datetime){
-              return Date.UTC(datetime.getFullYear(), datetime.getMonth(), datetime.getDate());
-            }
-
             function addWeek(weekNumber){
               let week = document.createElement("div");
               week.className = "week";
@@ -267,11 +294,32 @@
               // console.log("created: " + weekNumber);
             }
 
-            function addDay(weekNumber, dayNumber, text, classname="day"){
+            function addDay(weekNumber, dayNumber, text, classname="day", category=0){
+              console.log("event type T2: " + category);
+
               let day = document.createElement("div");
               day.className = classname;
               day.innerHTML=text;
               day.id="w" + weekNumber + "d" + dayNumber;
+              // let txt = "empty";
+              // if(category!=0) day.innerHTML = day.innerHTML + "+++"
+              const colors = ["#0099cc","#c0c0c0","#587b2e","#990000","#000000","#1C8200","#987baa","#981890","#AA8971","#1987FC","#99081E"];
+              if(category==EventType[1]) day.style.backgroundColor = colors[1];//rgb(0, 0, 255);
+              if(category==EventType[2]) day.style.backgroundColor = colors[2];//rgb(255, 0, 0);
+              if(category==EventType[3]) day.style.backgroundColor = colors[3];//rgb(0, 255, 0);
+              if(category==EventType[4]) day.style.backgroundColor = colors[3];//rgb(255, 255, 0);
+
+              // if(category==1) day.innerHTML="WORK";
+              // if(category==3) day.innerHTML="HOLIDAY";
+              // if(category==4) day.innerHTML="OTHER";
+
+              // if(category===EventType[1]){txt="WORK";} else
+              // if(category===EventType[3]){txt="HOLIDAY";} else 
+              // if(category===EventType[4]){txt="OTHER";} else 
+              // {txt = text};
+
+              // day.innerHTML=txt;
+
               // console.log("finding: " + "w" + weekNumber);
               document.getElementById("w" + weekNumber).appendChild(day);
             }
@@ -283,29 +331,35 @@
               //   1:"work",
               //   2:"programming",
               //   3:"holiday"
+              //   4:"other"
               // }
 
               function within(date, start, end){
-                return utc(start) < utc(date) < utc(end);
+                return utc(start) < utc(date) && utc(date) < utc(end);
               }
 
-              holiday1_start = new Date(2023, 11, 24);
+              holiday1_start = new Date(2023, 11, 24);//+1 on day and month
               holiday1_end = new Date(2024, 0, 4);
               holiday2_start = new Date(2024, 6, 14);
               holiday2_end = new Date(2024, 7, 29);
 
               if(within(datetime, holiday1_start, holiday1_end)){
+                console.log("h1");
                 return EventType[3];
               }
               if(within(datetime, holiday2_start, holiday2_end)){
+                console.log("h2");
                 return EventType[3];
               }
               if(datetime.getDay()===0){
                 return EventType[0];
               }// no work on sundays
-              if((datetime.getDate() + "-" + (datetime.getMonth+1) + "-" + datetime.getFullYear()) in eventPool){
-                return EventType[1];
+              let datestr = datetime.getDate() + "-" + (datetime.getMonth()+1) + "-" + datetime.getFullYear();
+              if(datestr in eventPool){
+                console.log("found event: " + eventPool[datestr]);
+                return eventPool[datestr];
               }// SNS
+              
               return EventType[2]; //weekday, lets finish the project
             }
 
@@ -316,7 +370,7 @@
             for(let i=0;i<7;i++) addDay(-2, i, Weekdays[i]);
             addWeek(-1);
 
-            console.log("eventPool: " + eventPool);
+            console.log("eventPool: " + eventPool.toString());
 
             for(let w=0; w<52; w++){
               let w_ = (w + current_week) % 52;
@@ -337,7 +391,12 @@
                 let future_date = new Date(utc(current_date) + 1000*60*60*24*(w*7 + d - starting_weekday));
                 // future_date.setDate(current_date.getDate() + (d + w*7));
                 // console.log(future_date.toString());
-                addDay(w, d, future_date.getDate() + "-" + (future_date.getMonth()+1));
+                let cat = checkForEvent(future_date);
+
+
+                // console.log("event type: " + cat);
+                addDay(w, d, future_date.getDate() + "-" + (future_date.getMonth()+1), classname="day", category=cat);
+                // addDay(w, d, future_date.getDate() + "-" + (future_date.getMonth()+1));
               }
             }
           }

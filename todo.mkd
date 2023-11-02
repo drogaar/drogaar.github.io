@@ -2,12 +2,13 @@
 [] format calendar properly
 [x] clean code
 [] proper website tab and google buttons
+[] mouseover event summary
 
 ### UI
 [] Get colors via api
 [] Set events colors appropriately
 [] add Legend
-[] replace innertext months with background text indication?
+[x] replace innertext months with background text indication?
 
 ### Features
 [] add a day event for every day of multi day events.

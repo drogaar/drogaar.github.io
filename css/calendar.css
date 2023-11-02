@@ -27,9 +27,10 @@
     text-align: center;
     /* flex-direction: row; */
     color: black;
-    height:30px;
+    /* height:30px; */
     margin: 1px;
     position: relative;
+    /* font-size: 14px; */
 }
 
 .day_hspace {
@@ -39,6 +40,7 @@
     text-align: center;
     margin: 1px;
     position: relative;
+    /* font-size: 14px; */
     /* flex-direction: row; */
 }
 
@@ -49,6 +51,6 @@
     /* writing-mode:vertical-rl; */
     z-index: 150;
     font-size: 30px;
-    color:  rgba(0, 0, 0, 0.45);
+    color:  rgba(0, 0, 0, 0.4);
 }
 

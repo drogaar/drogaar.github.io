@@ -214,15 +214,15 @@
 
     <section class="section" id = "calendar">
       <div class="section-heading">
-        <div class="container">
+        <!-- <div class="container">
           <h3 class="title is-2">Calendar</h3>
-        </div>
+        </div> -->
         <div>
           <div class="calendar"  id="planning_auto">
             <script>
               function addWeek(weekNumber){
                 let week = document.createElement("div");
-                week.className = "week";
+                week.className = "week #:";
                 week.id="w" + weekNumber;
                 document.getElementById("planning_auto").appendChild(week);
               }
@@ -274,9 +274,12 @@
     
                 // Calendar Header
                 addWeek(-2);
-                addDay(-2, -2, "week");
-                addDay(-2, -1, "", classname="day_hspace");
+                // addDay(-2, -2, "week");
+                addDay(-2, -1, "", classname="day_hspace");//Month placeholder
+                // addDay(-2, -2, "", classname="day_hspace");
+                // addDay(-2, -1, "week");
                 for(let i=0;i<7;i++) addDay(-2, i, Weekdays[i]);
+                addDay(-2, 7, "week");
                 addWeek(-1);
 
                 // // position month indicator
@@ -287,7 +290,7 @@
     
                 for(let w=0; w<52; w++){
                   addWeek(w);
-                  addDay(w, -2, (w + current_week) % 52);
+                  // addDay(w, -2, (w + current_week) % 52);
                   addDay(w, -1, "", classname="day_hspace");
     
                   starting_weekday = (current_date.getDay() - 1) % 7;
@@ -315,6 +318,7 @@
                       // addMonth(future_date.getMonth(), getBbx("w" + w + "d" + d).left, getBbx("w" + w + "d" + d).top);
                     }
                   }
+                  addDay(w, 7, (w + current_week) % 52);
                 }
               }
     

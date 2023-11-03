@@ -67,17 +67,6 @@
           return utc(start) < utc(date) && utc(date) < utc(end);
         }
 
-        holiday1_start = new Date(2023, 11, 24);//+1 on day and month
-        holiday1_end = new Date(2024, 0, 4);
-        holiday2_start = new Date(2024, 6, 14);
-        holiday2_end = new Date(2024, 7, 29);
-
-        if(within(datetime, holiday1_start, holiday1_end)){
-          return EventType[3];
-        }
-        if(within(datetime, holiday2_start, holiday2_end)){
-          return EventType[3];
-        }
         if(datetime.getDay()===0){
           return EventType[0];
         }// no work on sundays
@@ -121,14 +110,13 @@
             if(event_summary.includes("werk")) category = EventType[1];
             console.log("event type: " + category + ". found: " + event_summary);
 
-            let event_dt = new Date(timestamp_start);
-            let str = event_dt.getDate() + "-" + (event_dt.getMonth()+1) + "-" + event_dt.getFullYear();
-            eventPool[str] = category;
-
             // add an event for every day of multi day events.
-            // for(let d = timestamp_start; d < timestamp_end; d += 1000*60*60*24*1){
-            //   eventPool[new Date(d)] = category;
-            // }
+            const msday = 1000*60*60*24;
+            for(let d = timestamp_start; d <= timestamp_end; d += msday){
+              let event_dt = new Date(d);
+              let str = event_dt.getDate() + "-" + (event_dt.getMonth()+1) + "-" + event_dt.getFullYear();
+              eventPool[str] = category;
+            }
           }
         }
 

@@ -11,6 +11,6 @@
 [x] replace innertext months with background text indication?
 
 ### Features
-[] add a day event for every day of multi day events.
+[x] add a day event for every day of multi day events.
 [] be able to show multiple events ? [allocated holiday and work]
 [] Use modern js, api and callback 

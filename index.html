@@ -82,20 +82,26 @@
 
       function loadCalendar() {
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/primary/events')
+        xhr.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=2023-11-05T00:00:00Z&timeMax=2024-11-05T00:00:00Z&maxResults=1500&singleEvents=True');//&timeMin=2023-11-06T00:00:00+01:00
         xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
+        // timestamp for 17:40 CET 6-11-2023 is 2023-11-06T17:40:00+01:00
         xhr.send();
 
         function gatherEvents(xmlObject){
           for(const [i, event] of Object.entries(xmlObject.items)){
+
             if(event.end === undefined){
+              console.log("EVENT: " + JSON.stringify(event, null, 2));
               console.log(i + " skipped: " + event);
               continue;
             } 
 
             let current_time = new Date();
             let timestamp_end = utc(new Date(event.end.dateTime));
+            // Object.keys(event).forEach((prop)=> console.log(prop + ":" + event[prop]));
+            // Object.keys(event.end).forEach((prop)=> console.log(prop + ":" + event.end[prop]));
             if(isNaN(timestamp_end)){
+              console.log("EVENT: " + JSON.stringify(event, null, 2));
               console.log(i + " skipped: " + event + " DT:" + event.end.dateTime);
               continue;
             }
@@ -112,11 +118,15 @@
 
             // add an event for every day of multi day events.
             const msday = 1000*60*60*24;
+            let ctr = 0;
             for(let d = timestamp_start; d <= timestamp_end; d += msday){
               let event_dt = new Date(d);
               let str = event_dt.getDate() + "-" + (event_dt.getMonth()+1) + "-" + event_dt.getFullYear();
+              console.log(str + ":" + category);
               eventPool[str] = category;
+              ctr++;
             }
+            console.log("found " + ctr + " events");
           }
         }
 
@@ -240,8 +250,7 @@
                 month.id = "m" + monthNumber;
                 month.style.left = left + "px";
                 month.style.top = top + "px";
-                console.log("add " + Months[monthNumber] + " at: " + left + ", " + top);
-                // document.body.appendChild(month);
+                // console.log("add " + Months[monthNumber] + " at: " + left + ", " + top);
                 document.getElementById("w" + weekNumber + "d" + dayNumber).appendChild(month);
 
               }

@@ -12,5 +12,6 @@
 
 ### Features
 [x] add a day event for every day of multi day events.
+[x] support recurring events
 [] be able to show multiple events ? [allocated holiday and work]
 [] Use modern js, api and callback 

@@ -5,7 +5,7 @@
 [] mouseover event summary
 
 ### UI
-[] Get colors via api
+[x] Get colors via api
 [] Set events colors appropriately
 [] add Legend
 [x] replace innertext months with background text indication?

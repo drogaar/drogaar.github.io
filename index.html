@@ -30,12 +30,44 @@
         4:"other"
       }
 
+      // Cocoa #795548, Flamingo #e67c73, Tomato #d50000, Tangerine #f4511e , Pumpkin #ef6c00, Mango #f09300, Eucalyptus #009688, Basil #0b8043, Pistachio #7cb342, Avocado #c0ca33, Citron #e4c441, Banana #f6bf26, Sage #33b679, Peacock #039be5, Cobalt #4285f4, Blueberry #3f51b5, Lavender #7986cb, Wisteria #b39ddb, Graphite #616161, Birch #a79b8e, Beetroot #ad1457, Cherryblossom #d81b60, Grape #8e24aa, Amythyst #9e69af
+      var Colors = {
+        "Cocoa":        "#795548", 
+        "Flamingo":     "#e67c73", 
+        "Tomato":       "#d50000", 
+        "Tangerine":    "#f4511e" , 
+        "Pumpkin":      "#ef6c00", 
+        "Mango":        "#f09300", 
+        "Eucalyptus":   "#009688", 
+        "Basil":        "#0b8043", 
+        "Pistachio":    "#7cb342", 
+        "Avocado":      "#c0ca33", 
+        "Citron":       "#e4c441", 
+        "Banana":       "#f6bf26", 
+        "Sage":         "#33b679", 
+        "Peacock":      "#039be5", 
+        "Cobalt":       "#4285f4", 
+        "Blueberry":    "#3f51b5", 
+        "Lavender":     "#7986cb", 
+        "Wisteria":     "#b39ddb", 
+        "Graphite":     "#616161", 
+        "Birch":        "#a79b8e", 
+        "Beetroot":     "#ad1457", 
+        "Cherryblossom":"#d81b60", 
+        "Grape":        "#8e24aa", 
+        "Amythyst":     "#9e69af"
+      }
+      Colors.eventById = {1:Colors.Lavender, 2:Colors.Sage, 3:Colors.Grape, 4:Colors.Flamingo, 5:Colors.Banana, 6:Colors.Tangerine, 7:Colors.Peacock, 8:Colors.Graphite, 9:Colors.Blueberry, 10:Colors.Basil, 11:Colors.Tomato}
+      Colors.calendarById = {1:Colors.Cocoa, 2:Colors.Flamingo, 3:Colors.Tomato, 4:Colors.Tangerine, 5:Colors.Pumpkin, 6:Colors.Mango, 7:Colors.Eucalyptus, 8:Colors.Basil, 9:Colors.Pistachio, 10:Colors.Avocado, 11:Colors.Citron, 12:Colors.Banana, 13:Colors.Sage, 14:Colors.Peacock, 15:Colors.Cobalt, 16:Colors.Blueberry, 17:Colors.Lavender, 18:Colors.Wisteria, 19:Colors.Graphite, 20:Colors.Birch, 21:Colors.Beetroot, 22:Colors.Cherryblossom, 23:Colors.Grape, 24:Colors.Amythyst};
+
+
       var eventPool = new Object();
 
       function initClient(){
         client = google.accounts.oauth2.initTokenClient({
           client_id: '616265016561-of2t07oji032h5al2nuu1ehu4ms8ic8m.apps.googleusercontent.com',
-          scope: 'https://www.googleapis.com/auth/calendar.events.readonly',
+          scope: 'https://www.googleapis.com/auth/calendar.events.readonly \
+          https://www.googleapis.com/auth/calendar.readonly',
           callback: (tokenResponse)=>{
             access_token = tokenResponse.access_token;
           }
@@ -63,12 +95,8 @@
         //   4:"other"
         // }
 
-        function within(date, start, end){
-          return utc(start) < utc(date) && utc(date) < utc(end);
-        }
-
         if(datetime.getDay()===0){
-          return EventType[0];
+          return [EventType[0], 0];
         }// no work on sundays
 
         let datestr = datetime.getDate() + "-" + (datetime.getMonth()+1) + "-" + datetime.getFullYear();
@@ -77,16 +105,10 @@
           return eventPool[datestr];
         }
         
-        return EventType[2];
+        return [EventType[2], 3];
       }
 
       function loadCalendar() {
-        var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=2023-11-05T00:00:00Z&timeMax=2024-11-05T00:00:00Z&maxResults=1500&singleEvents=True');//&timeMin=2023-11-06T00:00:00+01:00
-        xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
-        // timestamp for 17:40 CET 6-11-2023 is 2023-11-06T17:40:00+01:00
-        xhr.send();
-
         function gatherEvents(xmlObject){
           for(const [i, event] of Object.entries(xmlObject.items)){
 
@@ -115,6 +137,14 @@
             if(event_summary.includes("vakantie")) category = EventType[3];
             if(event_summary.includes("werk")) category = EventType[1];
             console.log("event type: " + category + ". found: " + event_summary);
+            let color_id = 1;
+            if(event.colorId){
+              console.log("Color: " + event.colorId + "=" + Colors.eventById[event.colorId]);
+              color_id = event.colorId;
+            } else {
+              console.log("no color found");
+            }
+            
 
             // add an event for every day of multi day events.
             const msday = 1000*60*60*24;
@@ -123,13 +153,30 @@
               let event_dt = new Date(d);
               let str = event_dt.getDate() + "-" + (event_dt.getMonth()+1) + "-" + event_dt.getFullYear();
               console.log(str + ":" + category);
-              eventPool[str] = category;
+              eventPool[str] = [category, color_id];
               ctr++;
             }
             console.log("found " + ctr + " events");
           }
         }
 
+        var xhr1 = new XMLHttpRequest();
+        xhr1.open('GET', 'https://www.googleapis.com/calendar/v3/colors');
+        xhr1.setRequestHeader('Authorization', 'Bearer ' + access_token);
+        xhr1.send();
+        xhr1.onload = function(){
+          let returnedColors = JSON.parse(xhr1.response);
+          // for(const [i, color] of Object.entries(returnedColors.event)){
+          //   console.log("COLORS: " + i + ":" + color.background);
+          // }
+          console.log(JSON.stringify(returnedColors.event, null, 2));
+        };
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=2023-11-05T00:00:00Z&timeMax=2024-11-05T00:00:00Z&maxResults=1500&singleEvents=True');//&timeMin=2023-11-06T00:00:00+01:00
+        xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
+        // timestamp for 17:40 CET 6-11-2023 is 2023-11-06T17:40:00+01:00
+        xhr.send();
         xhr.onload = function() {
           // console.log(`Loaded: ${xhr.status} ${xhr.response}`);
           let returnedEvents = JSON.parse(xhr.response);
@@ -225,18 +272,21 @@
                 document.getElementById("planning_auto").appendChild(week);
               }
     
-              function addDay(weekNumber, dayNumber, text, classname="day", category=0){
+              function addDay(weekNumber, dayNumber, text, classname="day", category=0, color=0){
                 let day = document.createElement("div");
                 day.className = classname;
                 day.innerHTML=text;
                 day.id="w" + weekNumber + "d" + dayNumber;
                 day.style.color="rgba(0, 0, 0, 1);"
     
-                const colors = ["#0099cc","#E6E6FA","#fde2a3","#cfdfc4","#f6c2a8","#1C8200","#987baa","#981890","#AA8971","#1987FC","#99081E"];
-                if(category==EventType[1]) day.style.backgroundColor = colors[1];
-                if(category==EventType[2]) day.style.backgroundColor = colors[2];
-                if(category==EventType[3]) day.style.backgroundColor = colors[3];
-                if(category==EventType[4]) day.style.backgroundColor = colors[4];
+                // const colors = ["#0099cc","#E6E6FA","#fde2a3","#cfdfc4","#f6c2a8","#1C8200","#987baa","#981890","#AA8971","#1987FC","#99081E"];
+                // if(category==EventType[1]) day.style.backgroundColor = colors[1];
+                // if(category==EventType[2]) day.style.backgroundColor = colors[2];
+                // if(category==EventType[3]) day.style.backgroundColor = colors[3];
+                // if(category==EventType[4]) day.style.backgroundColor = colors[4];
+                if(color!==0){
+                  day.style.backgroundColor = Colors.eventById[color];
+                }
                 if(category==-1) day.style.color="#666666";
     
                 document.getElementById("w" + weekNumber).appendChild(day);
@@ -291,8 +341,8 @@
                     }
 
                     let future_date = new Date(utc(current_date) + 1000*60*60*24*(w*7 + d - starting_weekday));
-                    let cat = checkForEvent(future_date);
-                    addDay(w, d, future_date.getDate(), classname="day", category=cat);
+                    let [cat, colId] = checkForEvent(future_date);
+                    addDay(w, d, future_date.getDate(), classname="day", category=cat, color=colId);
                     
                     if(d===3 && 0 < future_date.getDate() && future_date.getDate() <= 7){
                       function getBbx(id) {return document.getElementById(id).getBoundingClientRect();}

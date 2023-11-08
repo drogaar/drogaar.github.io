@@ -7,7 +7,7 @@
 ### UI
 [x] Get colors via api (api does not provide the colors)
 [x] Set events colors appropriately
-[] proper website tabs
+[x] proper website tabs
 [] proper modern google buttons ?
 [] add Legend
 [x] replace innertext months with background text indication?

@@ -248,13 +248,13 @@
         </div>
 
         <div class="navbar-end">
-          <a class="navbar-item" onclick="getToken()">
+          <a class="navbar-item calendar-google-ctrl" onclick="getToken()" style="display:none;">
             <span>Authorise your google</span>
           </a>
-          <a class="navbar-item" onclick="loadCalendar()">
+          <a class="navbar-item calendar-google-ctrl" onclick="loadCalendar()" style="display:none;">
             <span>Load calendar</span>
           </a>
-          <a class="navbar-item" onclick="revokeToken()">
+          <a class="navbar-item calendar-google-ctrl" onclick="revokeToken()" style="display:none;">
             <span>Revoke google</span>
           </a>
         </div>
@@ -389,6 +389,18 @@
           tabSections[i].style.display = "none";
         }
         document.getElementById(tabName).style.display = "block";
+
+        let calendarControls = document.getElementsByClassName("calendar-google-ctrl");
+        for (i = 0; i < calendarControls.length; i++) {
+          if(tabName === "calendar"){
+            calendarControls[i].style.display = "block";
+            console.log("control turned on");
+          } else {
+            calendarControls[i].style.display = "none";
+            console.log("control turned off");
+          }
+        }
+
         // // tab button display
         // tablinks = document.getElementsByClassName("tablinks");
         // for (i = 0; i < tablinks.length; i++) {

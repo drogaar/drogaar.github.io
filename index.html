@@ -140,6 +140,12 @@
 
       function loadCalendar() {
         function gatherEvents(xmlObject){
+
+          let eventSummaries = new Array(11);
+          for(let i=0;i<11;i++){
+            eventSummaries[i] = [];
+          }
+
           for(const [i, event] of Object.entries(xmlObject.items)){
 
             if(event.end === undefined){
@@ -172,19 +178,49 @@
               // console.log("Color: " + event.colorId + "=" + Colors.eventById[event.colorId]);
               color_id = event.colorId;
             }
+            eventSummaries[color_id].push(event_summary);
 
             // add an event for every day of multi day events.
             const msday = 1000*60*60*24;
-            let ctr = 0;
+            
             for(let d = timestamp_start; d <= timestamp_end; d += msday){
               let event_dt = new Date(d);
               let str = event_dt.getDate() + "-" + (event_dt.getMonth()+1) + "-" + event_dt.getFullYear();
               console.log(str + ":" + category);
               eventPool[str] = [category, color_id];
-              ctr++;
             }
-            console.log("found " + ctr + " events");
           }
+
+          // start to construct legend
+          let usedColors = [];
+          for(let i=0;i<11;i++){
+            if(eventSummaries[i].length>0){
+              usedColors.push(i);
+            }
+          }
+          let descriptors = new Array(11);
+
+          //find most common word to describe used colours
+          class DefaultDict {
+            constructor(defaultVal) {
+              return new Proxy({}, {
+                get: (target, name) => name in target ? target[name] : defaultVal
+              })
+            }
+          }
+          for(let colorId=0; colorId<usedColors.length;colorId++){
+            let bagOfWords = new DefaultDict(0);
+            for(let i=0;i<usedColors[colorId].length;i++){
+              let words = eventSummaries[colorId][i].split(" ");
+              for(let word of words){
+                bagOfWords[words] += 1;
+              }
+            }
+            const descriptor = Object.entries(bagOfWords).reduce((a, b) => a[1] > b[1] ? a : b)[0]; //most common word
+
+            descriptors[usedColors[colorId]] = descriptor;
+          }
+
         }
 
         // var xhr1 = new XMLHttpRequest();
@@ -346,7 +382,7 @@
                   <li><span class="legend_item" style="background-color: blanchedalmond;"></span> Login to show your events.</li>
                 </ul>
 
-                <br><br>
+                <!-- <br><br> -->
               </div>
 
             </div>

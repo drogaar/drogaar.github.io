@@ -287,96 +287,160 @@
     <section class="section tabSection" id = "calendar" style="display:none;">
       <div class="section-heading">
         <div class="container" id="calendar_heading">
-          <!-- <h3 class="title is-2">Calendar</h3> -->
-        </div>
-        <div>
-          <div class="calendar"  id="planning_auto">
-            <script>
-              function addWeek(weekNumber){
-                let week = document.createElement("div");
-                week.className = "week #:";
-                week.id="w" + weekNumber;
-                document.getElementById("planning_auto").appendChild(week);
-              }
-    
-              function addDay(weekNumber, dayNumber, text, classname="day", color=0){
-                let day = document.createElement("div");
-                day.className = classname;
-                day.innerHTML=text;
-                day.id="w" + weekNumber + "d" + dayNumber;
-                day.style.color="rgba(0, 0, 0, 1);"
-                if(color!==0){
-                  day.style.backgroundColor = Colors.eventById[color];
-                  // console.log("painting day w" + weekNumber + "d" + dayNumber + " with color " + color + "=" + Colors.eventById[color]);
+          <div class="tile is-ancestor is-parent">
+            <div class="tile is-parent">
+
+              <div class="tile is-4 is-child box">
+                <p class="title">Controls</p>
+                <button class="button">Start at 1 jan</button>
+              </div>
+
+              <div class="tile is-4 is-child box" style="visibility:hidden">
+              </div>
+
+              <div class="tile is-4 is-child box">
+                <p class="title" id="legend">Legend</p>
+
+                <!-- <div style="color:blanchedalmond;font-size:40px;">&#9632;</div><p>Login to show your events.</p> -->
+                <!-- <div class="tile is-ancestor is-vertical">
+                  <div class="tile is-parent">
+                     
+                    <div class="tile is-2 is-child box" style="background-color: blanchedalmond;height:25px;width:25px;">
+                    </div>
+                    <div class="tile is-1 is-child box" style="visibility:hidden">
+                    </div>
+                    <div class="tile is-child">
+                      <p>Login to show your events.</p>
+                    </div>
+                  </div>
+                  
+                </div> -->
+<!-- 
+                <div class="media">
+                  <div class="media-left">
+                      <p style="color:blanchedalmond;">&#9632;</p>
+                  </div>
+                  <div class="media-content">
+                    <p>Login to show your events.</p>
+                  </div>
+                </div>
+
+                <div class="media">
+                  <div class="media-left">
+                      <p style="color:blanchedalmond;">&#9632;</p>
+                  </div>
+                  <div class="media-content">
+                    <p>Login to show your events.</p>
+                  </div>
+                </div> -->
+
+                <!-- <ul>
+                  <li><span class="legend-color" style="background-color: #3498db;"></span> Public Holidays</li>
+                  <li><span class="legend-color" style="background-color: #2ecc71;"></span> Work Days</li>
+                  <li><span class="legend-color" style="background-color: #f1c40f;"></span> Meetings</li>
+                  <li><span class="legend-color" style="background-color: #e74c3c;"></span> Important Deadlines</li>
+                  <li><span class="legend-color" style="background-color: #ecf0f1;"></span> No Events</li>
+                </ul> -->
+
+                <ul>
+                  <li><span class="legend_item" style="background-color: blanchedalmond;"></span> Login to show your events.</li>
+                </ul>
+
+                <br><br>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="tile box">
+            <div class="calendar" id="planning_auto">
+              <script>
+                function addWeek(weekNumber){
+                  let week = document.createElement("div");
+                  week.className = "week #:";
+                  week.id="w" + weekNumber;
+                  document.getElementById("planning_auto").appendChild(week);
                 }
-                if(color===-1) day.style.color="#999999";
-                
-    
-                document.getElementById("w" + weekNumber).appendChild(day);
-              }
-
-              function addMonth(monthNumber, weekNumber, dayNumber, left, top){
-                const Months = {0:"January", 1:"February", 2:"March", 3:"April", 4:"May", 5:"June", 6:"July", 7:"August", 8:"September", 9:"Oktober", 10:"November", 11:"December"}
-                let month = document.createElement("div");
-                month.className = "background_text";
-                month.innerHTML = Months[monthNumber].substring(0,3);
-                month.id = "m" + monthNumber;
-                month.style.left = left + "px";
-                month.style.top = top + "px";
-                // console.log("add " + Months[monthNumber] + " at: " + left + ", " + top);
-                document.getElementById("w" + weekNumber + "d" + dayNumber).appendChild(month);
-
-              }
-    
-              function drawCalendar(){
-                const Weekdays = {0:"Mo", 1:"Tu", 2:"We", 3:"Th", 4:"Fr", 5:"Sa", 6:"Su",}
-    
-                //empty current calendar if any
-                let calendar = document.getElementById("planning_auto")
-                let content = calendar.lastElementChild;  
-                while (content) { 
-                  calendar.removeChild(content); 
-                  content = calendar.lastElementChild; 
-                }
-    
-                let current_date = new Date();
-                let startDate = new Date(current_date.getFullYear(), 0, 1);
-                let days = Math.floor((current_date - startDate) / (24*60*60*1000));
-                let current_week = Math.ceil(days / 7);
-    
-                // Calendar Header
-                addWeek(-2);
-                addDay(-2, -1, "", classname="day_hspace");//Month
-                for(let i=0;i<7;i++) addDay(-2, i, Weekdays[i], classname="day", color=-1);
-                addDay(-2, 7, "week", classname="day", color=-1);
-    
-                for(let w=0; w<52; w++){
-                  addWeek(w);
-                  addDay(w, -1, "", classname="day_hspace");
-    
-                  starting_weekday = (current_date.getDay() - 1) % 7;
-                  for(let d=0; d<7; d++){
-                    if(w===0 && d < starting_weekday){//skip days of first week when current day not being the first of the week
-                      addDay(w, d, "", classname="day_hspace");
-                      continue;
-                    }
-
-                    let future_date = new Date(utc(current_date) + 1000*60*60*24*(w*7 + d - starting_weekday));
-                    let [cat, colId] = checkForEvent(future_date);
-                    addDay(w, d, future_date.getDate(), classname="day", color=colId);
-                    
-                    if(d===3 && 0 < future_date.getDate() && future_date.getDate() <= 7){
-                      function getBbx(id) {return document.getElementById(id).getBoundingClientRect();}
-                      addMonth(future_date.getMonth(), w, -1, 0, -5);
-                    }
+      
+                function addDay(weekNumber, dayNumber, text, classname="day", color=0){
+                  let day = document.createElement("div");
+                  day.className = classname;
+                  day.innerHTML=text;
+                  day.id="w" + weekNumber + "d" + dayNumber;
+                  day.style.color="rgba(0, 0, 0, 1);"
+                  if(color!==0){
+                    day.style.backgroundColor = Colors.eventById[color];
+                    // console.log("painting day w" + weekNumber + "d" + dayNumber + " with color " + color + "=" + Colors.eventById[color]);
                   }
-
-                  addDay(w, 7, (w + current_week) % 52, classname="day", color=-1);//week
+                  if(color===-1) day.style.color="#999999";
+                  
+      
+                  document.getElementById("w" + weekNumber).appendChild(day);
                 }
-              }
-    
-              drawCalendar();
-            </script>
+  
+                function addMonth(monthNumber, weekNumber, dayNumber, left, top){
+                  const Months = {0:"January", 1:"February", 2:"March", 3:"April", 4:"May", 5:"June", 6:"July", 7:"August", 8:"September", 9:"Oktober", 10:"November", 11:"December"}
+                  let month = document.createElement("div");
+                  month.className = "background_text";
+                  month.innerHTML = Months[monthNumber].substring(0,3);
+                  month.id = "m" + monthNumber;
+                  month.style.left = left + "px";
+                  month.style.top = top + "px";
+                  // console.log("add " + Months[monthNumber] + " at: " + left + ", " + top);
+                  document.getElementById("w" + weekNumber + "d" + dayNumber).appendChild(month);
+  
+                }
+      
+                function drawCalendar(){
+                  const Weekdays = {0:"Mo", 1:"Tu", 2:"We", 3:"Th", 4:"Fr", 5:"Sa", 6:"Su",}
+      
+                  //empty current calendar if any
+                  let calendar = document.getElementById("planning_auto")
+                  let content = calendar.lastElementChild;  
+                  while (content) { 
+                    calendar.removeChild(content); 
+                    content = calendar.lastElementChild; 
+                  }
+      
+                  let current_date = new Date();
+                  let startDate = new Date(current_date.getFullYear(), 0, 1);
+                  let days = Math.floor((current_date - startDate) / (24*60*60*1000));
+                  let current_week = Math.ceil(days / 7);
+      
+                  // Calendar Header
+                  addWeek(-2);
+                  addDay(-2, -1, "", classname="day_hspace");//Month
+                  for(let i=0;i<7;i++) addDay(-2, i, Weekdays[i], classname="day", color=-1);
+                  addDay(-2, 7, "week", classname="day", color=-1);
+      
+                  for(let w=0; w<52; w++){
+                    addWeek(w);
+                    addDay(w, -1, "", classname="day_hspace");
+      
+                    starting_weekday = (current_date.getDay() - 1) % 7;
+                    for(let d=0; d<7; d++){
+                      if(w===0 && d < starting_weekday){//skip days of first week when current day not being the first of the week
+                        addDay(w, d, "", classname="day_hspace");
+                        continue;
+                      }
+  
+                      let future_date = new Date(utc(current_date) + 1000*60*60*24*(w*7 + d - starting_weekday));
+                      let [cat, colId] = checkForEvent(future_date);
+                      addDay(w, d, future_date.getDate(), classname="day", color=colId);
+                      
+                      if(d===3 && 0 < future_date.getDate() && future_date.getDate() <= 7){
+                        function getBbx(id) {return document.getElementById(id).getBoundingClientRect();}
+                        addMonth(future_date.getMonth(), w, -1, 0, -5);
+                      }
+                    }
+  
+                    addDay(w, 7, (w + current_week) % 52, classname="day", color=-1);//week
+                  }
+                }
+      
+                drawCalendar();
+              </script>
+            </div>
           </div>
         </div>
       </div>

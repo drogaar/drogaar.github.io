@@ -54,3 +54,10 @@
     color:  rgba(0, 0, 0, 0.4);
 }
 
+.legend_item {
+    display:inline-block;
+    width:20px;
+    height:20px;
+    margin-right:10px;
+}
+

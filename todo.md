@@ -19,6 +19,7 @@
 [] future & past years
 [] be able to show multiple events ? [allocated holiday and work]
 [] automatic event type recognition and colouring
+[] event filtering
 
 ### bugs
 favicon not always found. prob async loading

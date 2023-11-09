@@ -216,7 +216,7 @@
     
   </head>
   <body>
-    <nav class="navbar is-black" role="navigation" aria-label="main navigation">
+    <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
         <div role="button" class="navbar-burger" aria-label="menu" aria-expanded="false" data-target="yourstandardnavbar">
           <span aria-hidden="true"></span>
@@ -262,10 +262,10 @@
     </nav>
 
     <!-- Header -->
-    <section class="hero is-black is-medium">
+    <section class="hero is-dark is-small">
       <div class="hero-body">
         <div class="container">
-          <h1 class="title is-1">
+          <h1 class="title is-1" id="title">
             Danny Rogaar
           </h1>
         </div>
@@ -286,9 +286,9 @@
 
     <section class="section tabSection" id = "calendar" style="display:none;">
       <div class="section-heading">
-        <!-- <div class="container">
-          <h3 class="title is-2">Calendar</h3>
-        </div> -->
+        <div class="container" id="calendar_heading">
+          <!-- <h3 class="title is-2">Calendar</h3> -->
+        </div>
         <div>
           <div class="calendar"  id="planning_auto">
             <script>
@@ -400,6 +400,13 @@
             console.log("control turned off");
           }
         }
+
+        if(tabName==="calendar"){
+          document.getElementById("title").innerHTML = "Calendar";
+        } 
+        if(tabName==="about"){
+          document.getElementById("title").innerHTML = "Danny Rogaar";
+        } 
 
         // // tab button display
         // tablinks = document.getElementsByClassName("tablinks");

@@ -217,7 +217,7 @@
             }
           }
 
-          let colDescriptors = new Object();
+          let colDescriptors = new Object(11);
           for(let colorId=0; colorId<usedColors.length;colorId++){
             let bagOfWords = new DefaultDict(0);
 
@@ -235,6 +235,21 @@
             colDescriptors[usedColors[colorId]] = colDescriptor;
           }
           console.log("colDescriptors:" + JSON.stringify(colDescriptors, null, 2));
+
+          function drawLegend(descriptionByColorId){
+            let legendList = ""
+            for(let colorId=0; colorId<11; colorId++){
+              let descriptor = descriptionByColorId[colorId];
+              if(descriptor===null || descriptor ===undefined) continue;
+
+              legendList += "<li><span class='legend_item' style='background-color: " + Colors.eventById[colorId] + ";'></span>" + descriptor + "</li>"
+            }
+            console.log(legendList);
+
+            document.getElementById("legendList").innerHTML = legendList;
+          }
+
+          drawLegend(colDescriptors);
 
         }
 
@@ -393,7 +408,7 @@
                   <li><span class="legend-color" style="background-color: #ecf0f1;"></span> No Events</li>
                 </ul> -->
 
-                <ul>
+                <ul id="legendList">
                   <li><span class="legend_item" style="background-color: blanchedalmond;"></span> Login to show your events.</li>
                 </ul>
 

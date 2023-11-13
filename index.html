@@ -195,6 +195,12 @@
             }
           }
 
+          //summary histogram by color
+          console.log("eventSummaries lengths: ");
+          for(let ctr = 0; ctr < 11; ctr++){
+            console.log(ctr + "colorId" + eventSummaries[ctr].length);
+          }
+
           // start to construct legend
           let usedColors = [];
           for(let i=0;i<11;i++){
@@ -204,6 +210,8 @@
           }
           let descriptors = new Array(11);
 
+          console.log("usedColors: " + usedColors.toString());
+
           //find most common word to describe used colours
           class DefaultDict {
             constructor(defaultVal) {
@@ -212,18 +220,40 @@
               })
             }
           }
+
+          let colDescriptors = new Object(11);
           for(let colorId=0; colorId<usedColors.length;colorId++){
             let bagOfWords = new DefaultDict(0);
-            for(let i=0;i<usedColors[colorId].length;i++){
-              let words = eventSummaries[colorId][i].split(" ");
-              for(let word of words){
-                bagOfWords[words] += 1;
+
+            //accumulate and count all words for this color
+            for(let summary of eventSummaries[usedColors[colorId]]){
+              for(let word of summary.split(" ")){
+                bagOfWords[word] += 1;
               }
             }
-            const descriptor = Object.entries(bagOfWords).reduce((a, b) => a[1] > b[1] ? a : b)[0]; //most common word
 
-            descriptors[usedColors[colorId]] = descriptor;
+            console.log("bagofwords for color " + usedColors[colorId] +"="+ Colors.eventById[usedColors[colorId]] + " :" + JSON.stringify(bagOfWords, null, 2));
+
+            // descriptor is most common word. 
+            const colDescriptor = Object.entries(bagOfWords).reduce((a, b) => a[1] > b[1] ? a : b)[0];
+            colDescriptors[usedColors[colorId]] = colDescriptor;
           }
+          console.log("colDescriptors:" + JSON.stringify(colDescriptors, null, 2));
+
+          function drawLegend(descriptionByColorId){
+            let legendList = ""
+            for(let colorId=0; colorId<11; colorId++){
+              let descriptor = descriptionByColorId[colorId];
+              if(descriptor===null || descriptor ===undefined) continue;
+
+              legendList += "<li><span class='legend_item' style='background-color: " + Colors.eventById[colorId] + ";'></span>" + descriptor + "</li>"
+            }
+            console.log(legendList);
+
+            document.getElementById("legendList").innerHTML = legendList;
+          }
+
+          drawLegend(colDescriptors);
 
         }
 
@@ -382,7 +412,7 @@
                   <li><span class="legend-color" style="background-color: #ecf0f1;"></span> No Events</li>
                 </ul> -->
 
-                <ul>
+                <ul id="legendList">
                   <li><span class="legend_item" style="background-color: blanchedalmond;"></span> Login to show your events.</li>
                 </ul>
 

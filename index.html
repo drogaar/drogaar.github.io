@@ -90,6 +90,10 @@
       // Colors.calendarById = {1:palette.Cocoa, 2:palette.Flamingo, 3:palette.Tomato, 4:palette.Tangerine, 5:palette.Pumpkin, 6:palette.Mango, 7:palette.Eucalyptus, 8:palette.Basil, 9:palette.Pistachio, 10:palette.Avocado, 11:palette.Citron, 12:palette.Banana, 13:palette.Sage, 14:palette.Peacock, 15:palette.Cobalt, 16:palette.Blueberry, 17:palette.Lavender, 18:palette.Wisteria, 19:palette.Graphite, 20:palette.Birch, 21:palette.Beetroot, 22:palette.Cherryblossom, 23:palette.Grape, 24:palette.Amythyst};
       console.log("Colors.eventById1", Colors.eventById[1]);
 
+      // Calendar
+      var Settings = new Object();
+      Settings.startAtJan = false; //whether to start calendar at today or january
+
 
       var eventPool = new Object();
 
@@ -328,7 +332,7 @@
 
               <div class="tile is-4 is-child box">
                 <p class="title">Controls</p>
-                <button class="button">Start at 1 jan</button>
+                <button class="button" onclick="Settings.startAtJan=!Settings.startAtJan;drawCalendar();">Start at 1 jan</button>
               </div>
 
               <div class="tile is-4 is-child box" style="visibility:hidden">
@@ -440,6 +444,10 @@
       
                   let current_date = new Date();
                   let startDate = new Date(current_date.getFullYear(), 0, 1);
+                  if(Settings.startAtJan===true){
+                    current_date = startDate;
+                  }
+
                   let days = Math.floor((current_date - startDate) / (24*60*60*1000));
                   let current_week = Math.ceil(days / 7);
       

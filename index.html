@@ -158,7 +158,7 @@
               continue;
             } 
 
-            let current_time = new Date();
+            // let current_time = new Date();
             let timestamp_end = utc(new Date(event.end.dateTime));
             // Object.keys(event).forEach((prop)=> console.log(prop + ":" + event[prop]));
             // Object.keys(event.end).forEach((prop)=> console.log(prop + ":" + event.end[prop]));
@@ -167,7 +167,7 @@
               console.log(i + " skipped: " + event + " DT:" + event.end.dateTime);
               continue;
             }
-            if(timestamp_end < utc(current_time)) continue;
+            // if(timestamp_end < utc(current_time)) continue;
 
             let timestamp_start = utc(new Date(event.start.dateTime));
 
@@ -210,7 +210,7 @@
           }
           let descriptors = new Array(11);
 
-          console.log("usedColors: " + usedColors.toString());
+          // console.log("usedColors: " + usedColors.toString());
 
           //find most common word to describe used colours
           class DefaultDict {
@@ -232,13 +232,13 @@
               }
             }
 
-            console.log("bagofwords for color " + usedColors[colorId] +"="+ Colors.eventById[usedColors[colorId]] + " :" + JSON.stringify(bagOfWords, null, 2));
+            // console.log("bagofwords for color " + usedColors[colorId] +"="+ Colors.eventById[usedColors[colorId]] + " :" + JSON.stringify(bagOfWords, null, 2));
 
             // descriptor is most common word. 
             const colDescriptor = Object.entries(bagOfWords).reduce((a, b) => a[1] > b[1] ? a : b)[0];
             colDescriptors[usedColors[colorId]] = colDescriptor;
           }
-          console.log("colDescriptors:" + JSON.stringify(colDescriptors, null, 2));
+          // console.log("colDescriptors:" + JSON.stringify(colDescriptors, null, 2));
 
           function drawLegend(descriptionByColorId){
             let legendList = ""
@@ -270,7 +270,15 @@
         // };
 
         var xhr = new XMLHttpRequest();
-        xhr.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=2023-11-05T00:00:00Z&timeMax=2024-11-05T00:00:00Z&maxResults=1500&singleEvents=True');//&timeMin=2023-11-06T00:00:00+01:00
+        //store dates into iso format for use in api call
+        let timeMin = new Date();
+        if(Settings.startAtJan){
+          timeMin = (new Date(new Date().getFullYear(), 0, 1));
+        }
+        let timeMax = (new Date(timeMin.getFullYear()+1, timeMin.getMonth(), timeMin.getDate()));
+        
+        // xhr.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=2023-11-05T00:00:00Z&timeMax=2024-11-05T00:00:00Z&maxResults=1500&singleEvents=True');//&timeMin=2023-11-06T00:00:00+01:00
+        xhr.open('GET', "https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=" + timeMin.toISOString() + "&timeMax=" + timeMax.toISOString() + "&maxResults=1500&singleEvents=True");//&timeMin=2023-11-06T00:00:00+01:00
         xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
         // timestamp for 17:40 CET 6-11-2023 is 2023-11-06T17:40:00+01:00
         xhr.send();

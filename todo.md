@@ -9,13 +9,15 @@
 [x] Set events colors appropriately
 [x] proper website tabs
 [] proper modern google buttons ?
-[] add Legend
+[x] add Legend
 [x] replace innertext months with background text indication?
 
 ### Features
 [x] add a day event for every day of multi day events.
 [x] support recurring events
-[] settings (color scheme, starting date now vs 1 jan, etc)
+[] settings
+    [] color schemes
+    [] starting date 
 [] future & past years
 [] be able to show multiple events ? [allocated holiday and work]
 [] automatic event type recognition and colouring

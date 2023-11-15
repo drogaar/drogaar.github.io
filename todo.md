@@ -2,7 +2,7 @@
 [x] format calendar properly
 [x] clean code
 [] mouseover event summary
-[] Use modern js, api and callback 
+
 
 ### UI
 [x] Get colors via api (api does not provide the colors)
@@ -12,16 +12,21 @@
 [x] add Legend
 [x] replace innertext months with background text indication?
 
+
 ### Features
 [x] add a day event for every day of multi day events.
 [x] support recurring events
 [] settings
     [] color schemes
-    [] starting date 
+    [x] starting date 
+[x] current year
 [] future & past years
-[] be able to show multiple events ? [allocated holiday and work]
-[] automatic event type recognition and colouring
+[/] automatic event type recognition and colouring
 [] event filtering
+[] be able to show multiple events ? [allocated holiday and work]
 
-### bugs
-favicon not always found. prob async loading
+### code and bugs
+[] favicon not always found. prob async loading
+[] onload of gsi not always found
+[] Use modern js, api and callbacks
+[x] Colors module

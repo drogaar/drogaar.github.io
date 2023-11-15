@@ -158,6 +158,8 @@
               continue;
             } 
 
+
+
             // let current_time = new Date();
             let timestamp_end = utc(new Date(event.end.dateTime));
             // Object.keys(event).forEach((prop)=> console.log(prop + ":" + event[prop]));
@@ -168,6 +170,8 @@
               continue;
             }
             // if(timestamp_end < utc(current_time)) continue;
+
+            // console.log("EVENT3: " + JSON.stringify(event, null, 2));
 
             let timestamp_start = utc(new Date(event.start.dateTime));
 
@@ -276,9 +280,11 @@
           timeMin = (new Date(new Date().getFullYear(), 0, 1));
         }
         let timeMax = (new Date(timeMin.getFullYear()+1, timeMin.getMonth(), timeMin.getDate()));
+        let callstring = "https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=" + timeMin.toISOString() + "&timeMax=" + timeMax.toISOString() + "&maxResults=1500&singleEvents=True";
+        console.log("Callstring: " + callstring);
         
         // xhr.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=2023-11-05T00:00:00Z&timeMax=2024-11-05T00:00:00Z&maxResults=1500&singleEvents=True');//&timeMin=2023-11-06T00:00:00+01:00
-        xhr.open('GET', "https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=" + timeMin.toISOString() + "&timeMax=" + timeMax.toISOString() + "&maxResults=1500&singleEvents=True");//&timeMin=2023-11-06T00:00:00+01:00
+        xhr.open('GET', callstring);//&timeMin=2023-11-06T00:00:00+01:00
         xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
         // timestamp for 17:40 CET 6-11-2023 is 2023-11-06T17:40:00+01:00
         xhr.send();
@@ -370,7 +376,7 @@
 
               <div class="tile is-4 is-child box">
                 <p class="title">Controls</p>
-                <button class="button" onclick="Settings.startAtJan=!Settings.startAtJan;drawCalendar();">Start at 1 jan</button>
+                <button class="button" onclick="Settings.startAtJan=!Settings.startAtJan;loadCalendar();">Start at 1 jan</button>
               </div>
 
               <div class="tile is-4 is-child box" style="visibility:hidden">
@@ -440,7 +446,7 @@
                   document.getElementById("planning_auto").appendChild(week);
                 }
       
-                function addDay(weekNumber, dayNumber, text, classname="day", color=0){
+                function addDay(weekNumber, dayNumber, text, classname="day", color=0, ){
                   let day = document.createElement("div");
                   day.className = classname;
                   day.innerHTML=text;
@@ -450,6 +456,10 @@
                     day.style.backgroundColor = Colors.eventById[color];
                     // console.log("painting day w" + weekNumber + "d" + dayNumber + " with color " + color + "=" + Colors.eventById[color]);
                   }
+
+                  // lerp color towards white
+                  if()
+
                   if(color===-1) day.style.color="#999999";
                   
       

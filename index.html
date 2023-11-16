@@ -4,12 +4,20 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Danny</title>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <!-- <link rel="stylesheet" type="text/css" href="./css/bulma.min.css"> -->
     <link rel="stylesheet" type="text/css" href="./css/calendar.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <script src="./js/collections.js"></script>
+    <script src="./js/colors.js"></script>
+    <script src="./js/control.js"></script>
+
+    <script src="https://accounts.google.com/gsi/client" onload="initClient()" async defer></script>
+    
     <script>
       $(document).ready(function() {
         $(".navbar-burger").click(function() {
@@ -17,10 +25,7 @@
             $(".navbar-menu").toggleClass("is-active");
         });
       });
-    </script>
-    <script src="https://accounts.google.com/gsi/client" onload="initClient()" async defer></script>
-    <script src="./js/colors.js"></script>
-    <script>
+
       var Settings = new Object();
       Settings.startAtJan = false; //whether to start calendar at today or january
 
@@ -269,7 +274,6 @@
                   day.style.color="rgba(0, 0, 0, 1);"
                   if(color!==0){
                     day.style.backgroundColor = Colors.eventById[color];
-                    // console.log("painting day w" + weekNumber + "d" + dayNumber + " with color " + color + "=" + Colors.eventById[color]);
 
                     if(isPast){
                       day.style.backgroundColor = Colors.scaleLightness(Colors.eventById[color], 4);
@@ -355,37 +359,5 @@
         </div>
       </div>
     </section>
-
-    <script>
-      function openTab(event, tabName) {
-        let tabSections = document.getElementsByClassName("tabSection");
-        for (i = 0; i < tabSections.length; i++) {
-          tabSections[i].style.display = "none";
-        }
-        document.getElementById(tabName).style.display = "block";
-
-        let calendarControls = document.getElementsByClassName("calendar-google-ctrl");
-        for (i = 0; i < calendarControls.length; i++) {
-          calendarControls[i].style.display = tabName === "calendar" ? "block" : "none";
-        }
-
-        if(tabName==="calendar"){
-          document.getElementById("title").innerHTML = "Calendar";
-        } 
-        if(tabName==="about"){
-          document.getElementById("title").innerHTML = "Danny Rogaar";
-        } 
-
-        // tab button display
-        tablinks = document.getElementsByClassName("tablinks");
-        for (i = 0; i < tablinks.length; i++) {
-          tablinks[i].className = tablinks[i].className.replace(" is-active", "");
-        }
-        let tabElement = event == undefined ? document.getElementById("aboutButton") : event.currentTarget;
-        tabElement.className += " is-active";
-      }
-      openTab(undefined, "about");
-    </script>
-
   </body>
 </html>

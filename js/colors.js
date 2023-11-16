@@ -1,5 +1,5 @@
-      // Cocoa #795548, Flamingo #e67c73, Tomato #d50000, Tangerine #f4511e , Pumpkin #ef6c00, Mango #f09300, Eucalyptus #009688, Basil #0b8043, Pistachio #7cb342, Avocado #c0ca33, Citron #e4c441, Banana #f6bf26, Sage #33b679, Peacock #039be5, Cobalt #4285f4, Blueberry #3f51b5, Lavender #7986cb, Wisteria #b39ddb, Graphite #616161, Birch #a79b8e, Beetroot #ad1457, Cherryblossom #d81b60, Grape #8e24aa, Amythyst #9e69af
       var Colors = new Object();
+
       Colors.google_Modern = {
         "Cocoa":        "#795548", 
         "Flamingo":     "#e67c73", 
@@ -26,6 +26,7 @@
         "Grape":        "#8e24aa", 
         "Amythyst":     "#9e69af"
       }
+
       Colors.merfolk11_2 = {
         "Tomato": "#d5638f",
         "Tangerine": "#f99797",
@@ -39,6 +40,7 @@
         "Flamingo": "#effdcf",
         "Graphite": "#363636",
       }
+
       Colors.colorgorical1001 = {
          "Basil" : "#75eab6",
          "Graphite" : "#cda19a",
@@ -52,12 +54,14 @@
          "Sage" : "#2af464",
          "Tomato" : "#fb899b"
       }
-      let palette = Colors.colorgorical1001;
+
       // const colors = ["#0099cc","#E6E6FA","#fde2a3","#cfdfc4","#f6c2a8","#1C8200","#987baa","#981890","#AA8971","#1987FC","#99081E"]; // old pastel
+
+      let palette = Colors.colorgorical1001;
       Colors.eventById = {1:palette.Lavender, 2:palette.Sage, 3:palette.Grape, 4:palette.Flamingo, 5:palette.Banana, 6:palette.Tangerine, 7:palette.Peacock, 8:palette.Graphite, 9:palette.Blueberry, 10:palette.Basil, 11:palette.Tomato}
       // Colors.calendarById = {1:palette.Cocoa, 2:palette.Flamingo, 3:palette.Tomato, 4:palette.Tangerine, 5:palette.Pumpkin, 6:palette.Mango, 7:palette.Eucalyptus, 8:palette.Basil, 9:palette.Pistachio, 10:palette.Avocado, 11:palette.Citron, 12:palette.Banana, 13:palette.Sage, 14:palette.Peacock, 15:palette.Cobalt, 16:palette.Blueberry, 17:palette.Lavender, 18:palette.Wisteria, 19:palette.Graphite, 20:palette.Birch, 21:palette.Beetroot, 22:palette.Cherryblossom, 23:palette.Grape, 24:palette.Amythyst};
-      console.log("Colors.eventById1", Colors.eventById[1]);
 
+    //   Converters using https://css-tricks.com/converting-color-spaces-in-javascript/
       Colors.RGBStringToRGBArr = function (rgbString) {
         let str = rgbString.split('(').pop();
         str = str.substring(0, str.length - 1);

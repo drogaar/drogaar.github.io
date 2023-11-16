@@ -20,24 +20,13 @@
     <script src="https://accounts.google.com/gsi/client" onload="initClient()" async defer></script>
     <script src="./js/colors.js"></script>
     <script>
-      var client;
-      var access_token;
-
-      var EventType = {
-        0:"nothing",
-        1:"work",
-        2:"programming",
-        3:"holiday",
-        4:"other"
-      }
-
-      // Calendar
       var Settings = new Object();
       Settings.startAtJan = false; //whether to start calendar at today or january
 
-
       var eventPool = new Object();
 
+      var client;
+      var access_token;
       function initClient(){
         client = google.accounts.oauth2.initTokenClient({
           client_id: '616265016561-of2t07oji032h5al2nuu1ehu4ms8ic8m.apps.googleusercontent.com',
@@ -61,81 +50,43 @@
         return Date.UTC(datetime.getFullYear(), datetime.getMonth(), datetime.getDate());
       }
 
-      function checkForEvent(datetime){
-        // const EventType = {
-        //   0:"nothing",
-        //   1:"work",
-        //   2:"programming",
-        //   3:"holiday"
-        //   4:"other"
-        // }
-
+      function getEvent(datetime){
         let datestr = datetime.getDate() + "-" + (datetime.getMonth()+1) + "-" + datetime.getFullYear();
         if(datestr in eventPool){
-          // console.log("found event: " + eventPool[datestr]);
           return eventPool[datestr];
         }
-        
-        // return [EventType[2], 3];
-        // if(datetime.getDay()===0){
-        //   return [EventType[0], 0];
-        // }// no work on sundays
-        return [EventType[0], 0];
+        return ["", 0];
       }
 
       function loadCalendar() {
         function gatherEvents(xmlObject){
-
           let eventSummaries = new Array(11);
           for(let i=0;i<11;i++){
             eventSummaries[i] = [];
           }
 
           for(const [i, event] of Object.entries(xmlObject.items)){
-
             if(event.end === undefined){
-              console.log("EVENT: " + JSON.stringify(event, null, 2));
-              console.log(i + " skipped: " + event);
+              console.log(i + " skipped event end: " + JSON.stringify(event, null, 2));
               continue;
             } 
 
-
-
-            // let current_time = new Date();
             let timestamp_end = utc(new Date(event.end.dateTime));
-            // Object.keys(event).forEach((prop)=> console.log(prop + ":" + event[prop]));
-            // Object.keys(event.end).forEach((prop)=> console.log(prop + ":" + event.end[prop]));
             if(isNaN(timestamp_end)){
-              console.log("EVENT: " + JSON.stringify(event, null, 2));
-              console.log(i + " skipped: " + event + " DT:" + event.end.dateTime);
+              console.log(i + " skipped event datetime: " + JSON.stringify(event, null, 2) + " DT:" + event.end.dateTime);
               continue;
             }
-            // if(timestamp_end < utc(current_time)) continue;
 
-            // console.log("EVENT3: " + JSON.stringify(event, null, 2));
-
-            let timestamp_start = utc(new Date(event.start.dateTime));
-
-            // check if event summary contains word "work" or "vakantie"
-            let event_summary = event.summary.toLowerCase();
-            let category = EventType[4];
-            if(event_summary.includes("vakantie")) category = EventType[3];
-            if(event_summary.includes("werk")) category = EventType[1];
-            // console.log("event type: " + category + ". found: " + event_summary);
-            let color_id = 1;
-            if(event.colorId){
-              // console.log("Color: " + event.colorId + "=" + Colors.eventById[event.colorId]);
-              color_id = event.colorId;
-            }
-            eventSummaries[color_id].push(event_summary);
+            let color_id = event.colorId ? event.colorId : 1;
+            eventSummaries[color_id].push(event.summary.toLowerCase());
 
             // add an event for every day of multi day events.
             const msday = 1000*60*60*24;
-            
+            let timestamp_start = utc(new Date(event.start.dateTime));
             for(let d = timestamp_start; d <= timestamp_end; d += msday){
               let event_dt = new Date(d);
               let str = event_dt.getDate() + "-" + (event_dt.getMonth()+1) + "-" + event_dt.getFullYear();
-              console.log(str + ":" + category);
+              let category = "";//currently unused
               eventPool[str] = [category, color_id];
             }
           }
@@ -154,8 +105,6 @@
             }
           }
           let descriptors = new Array(11);
-
-          // console.log("usedColors: " + usedColors.toString());
 
           //find most common word to describe used colours
           class DefaultDict {
@@ -177,13 +126,10 @@
               }
             }
 
-            // console.log("bagofwords for color " + usedColors[colorId] +"="+ Colors.eventById[usedColors[colorId]] + " :" + JSON.stringify(bagOfWords, null, 2));
-
             // descriptor is most common word. 
             const colDescriptor = Object.entries(bagOfWords).reduce((a, b) => a[1] > b[1] ? a : b)[0];
             colDescriptors[usedColors[colorId]] = colDescriptor;
           }
-          // console.log("colDescriptors:" + JSON.stringify(colDescriptors, null, 2));
 
           function drawLegend(descriptionByColorId){
             let legendList = ""
@@ -193,29 +139,14 @@
 
               legendList += "<li><span class='legend_item' style='background-color: " + Colors.eventById[colorId] + ";'></span>" + descriptor + "</li>"
             }
-            console.log(legendList);
 
             document.getElementById("legendList").innerHTML = legendList;
           }
 
           drawLegend(colDescriptors);
-
         }
 
-        // var xhr1 = new XMLHttpRequest();
-        // xhr1.open('GET', 'https://www.googleapis.com/calendar/v3/colors');
-        // xhr1.setRequestHeader('Authorization', 'Bearer ' + access_token);
-        // xhr1.send();
-        // xhr1.onload = function(){
-        //   let returnedColors = JSON.parse(xhr1.response);
-        //   // for(const [i, color] of Object.entries(returnedColors.event)){
-        //   //   console.log("COLORS: " + i + ":" + color.background);
-        //   // }
-        //   console.log(JSON.stringify(returnedColors.event, null, 2));
-        // };
-
         var xhr = new XMLHttpRequest();
-        //store dates into iso format for use in api call
         let timeMin = new Date();
         if(Settings.startAtJan){
           timeMin = (new Date(new Date().getFullYear(), 0, 1));
@@ -224,10 +155,8 @@
         let callstring = "https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=" + timeMin.toISOString() + "&timeMax=" + timeMax.toISOString() + "&maxResults=1500&singleEvents=True";
         console.log("Callstring: " + callstring);
         
-        // xhr.open('GET', 'https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=2023-11-05T00:00:00Z&timeMax=2024-11-05T00:00:00Z&maxResults=1500&singleEvents=True');//&timeMin=2023-11-06T00:00:00+01:00
-        xhr.open('GET', callstring);//&timeMin=2023-11-06T00:00:00+01:00
+        xhr.open('GET', callstring);
         xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
-        // timestamp for 17:40 CET 6-11-2023 is 2023-11-06T17:40:00+01:00
         xhr.send();
         xhr.onload = function() {
           // console.log(`Loaded: ${xhr.status} ${xhr.response}`);
@@ -236,7 +165,6 @@
           drawCalendar();
         };
       }
-      
     </script>
     
   </head>
@@ -252,8 +180,12 @@
 
       <div id="yourstandardnavbar" class="navbar-menu">
         <div class="navbar-start">
-          <a class="navbar-item tablinks" onclick="openTab(event, 'about')">
+          <a class="navbar-item tablinks is-active" onclick="openTab(event, 'about')" id="aboutButton">
             <span>About</span>
+          </a>
+
+          <a class="navbar-item tablinks" onclick="openTab(event, 'calendar')">
+            <span>Planning</span>
           </a>
 
           <a class="navbar-item" href="./resume.pdf">
@@ -265,10 +197,6 @@
                 <i class="fab fa-github"></i>
             </span>
             <span>Github</span>
-          </a>
-
-          <a class="navbar-item tablinks" onclick="openTab(event, 'calendar')">
-            <span>Planning</span>
           </a>
         </div>
 
@@ -309,6 +237,7 @@
       </div>
     </section>
 
+    <!-- Calendar -->
     <section class="section tabSection" id = "calendar" style="display:none;">
       <div class="section-heading">
         <div class="container" id="calendar_heading">
@@ -326,52 +255,10 @@
               <div class="tile is-4 is-child box">
                 <p class="title" id="legend">Legend</p>
 
-                <!-- <div style="color:blanchedalmond;font-size:40px;">&#9632;</div><p>Login to show your events.</p> -->
-                <!-- <div class="tile is-ancestor is-vertical">
-                  <div class="tile is-parent">
-                     
-                    <div class="tile is-2 is-child box" style="background-color: blanchedalmond;height:25px;width:25px;">
-                    </div>
-                    <div class="tile is-1 is-child box" style="visibility:hidden">
-                    </div>
-                    <div class="tile is-child">
-                      <p>Login to show your events.</p>
-                    </div>
-                  </div>
-                  
-                </div> -->
-<!-- 
-                <div class="media">
-                  <div class="media-left">
-                      <p style="color:blanchedalmond;">&#9632;</p>
-                  </div>
-                  <div class="media-content">
-                    <p>Login to show your events.</p>
-                  </div>
-                </div>
-
-                <div class="media">
-                  <div class="media-left">
-                      <p style="color:blanchedalmond;">&#9632;</p>
-                  </div>
-                  <div class="media-content">
-                    <p>Login to show your events.</p>
-                  </div>
-                </div> -->
-
-                <!-- <ul>
-                  <li><span class="legend-color" style="background-color: #3498db;"></span> Public Holidays</li>
-                  <li><span class="legend-color" style="background-color: #2ecc71;"></span> Work Days</li>
-                  <li><span class="legend-color" style="background-color: #f1c40f;"></span> Meetings</li>
-                  <li><span class="legend-color" style="background-color: #e74c3c;"></span> Important Deadlines</li>
-                  <li><span class="legend-color" style="background-color: #ecf0f1;"></span> No Events</li>
-                </ul> -->
-
-                <ul id="legendList">
+                
+                <ul id="legendList"><!--alternatively tiling approach-->
                   <li><span class="legend_item" style="background-color: blanchedalmond;"></span> Login to show your events.</li>
                 </ul>
-
-                <!-- <br><br> -->
               </div>
 
             </div>
@@ -416,7 +303,6 @@
                   month.id = "m" + monthNumber;
                   month.style.left = left + "px";
                   month.style.top = top + "px";
-                  // console.log("add " + Months[monthNumber] + " at: " + left + ", " + top);
                   document.getElementById("w" + weekNumber + "d" + dayNumber).appendChild(month);
   
                 }
@@ -459,7 +345,7 @@
                       }
   
                       let future_date = new Date(utc(current_date) + 1000*60*60*24*(w*7 + d - starting_weekday));
-                      let [cat, colId] = checkForEvent(future_date);
+                      let [_, colId] = getEvent(future_date);
                       let isPast=false;
                       if(utc(future_date) < utc(new Date())) isPast = true;
 
@@ -493,13 +379,7 @@
 
         let calendarControls = document.getElementsByClassName("calendar-google-ctrl");
         for (i = 0; i < calendarControls.length; i++) {
-          if(tabName === "calendar"){
-            calendarControls[i].style.display = "block";
-            console.log("control turned on");
-          } else {
-            calendarControls[i].style.display = "none";
-            console.log("control turned off");
-          }
+          calendarControls[i].style.display = tabName === "calendar" ? "block" : "none";
         }
 
         if(tabName==="calendar"){
@@ -509,14 +389,15 @@
           document.getElementById("title").innerHTML = "Danny Rogaar";
         } 
 
-        // // tab button display
-        // tablinks = document.getElementsByClassName("tablinks");
-        // for (i = 0; i < tablinks.length; i++) {
-        //   tablinks[i].className = tablinks[i].className.replace(" active", "");
-        // }
-        // event.currentTarget.className += " active";
+        // tab button display
+        tablinks = document.getElementsByClassName("tablinks");
+        for (i = 0; i < tablinks.length; i++) {
+          tablinks[i].className = tablinks[i].className.replace(" is-active", "");
+        }
+        let tabElement = event == undefined ? document.getElementById("aboutButton") : event.currentTarget;
+        tabElement.className += " is-active";
       }
-      openTab("", "about");
+      openTab(undefined, "about");
     </script>
 
   </body>

@@ -4,11 +4,12 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Danny</title>
-    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.1/css/bulma.min.css"> -->
-    <link rel="stylesheet" type="text/css" href="./css/bulma.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <!-- <link rel="stylesheet" type="text/css" href="./css/bulma.min.css"> -->
     <link rel="stylesheet" type="text/css" href="./css/calendar.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.2/css/all.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="./js/collections.js"></script>
     <script>
       $(document).ready(function() {
         $(".navbar-burger").click(function() {
@@ -91,12 +92,6 @@
             }
           }
 
-          //summary histogram by color
-          console.log("eventSummaries lengths: ");
-          for(let ctr = 0; ctr < 11; ctr++){
-            console.log(ctr + "colorId" + eventSummaries[ctr].length);
-          }
-
           // start to construct legend
           let usedColors = [];
           for(let i=0;i<11;i++){
@@ -107,14 +102,6 @@
           let descriptors = new Array(11);
 
           //find most common word to describe used colours
-          class DefaultDict {
-            constructor(defaultVal) {
-              return new Proxy({}, {
-                get: (target, name) => name in target ? target[name] : defaultVal
-              })
-            }
-          }
-
           let colDescriptors = new Object(11);
           for(let colorId=0; colorId<usedColors.length;colorId++){
             let bagOfWords = new DefaultDict(0);

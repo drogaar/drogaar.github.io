@@ -24,6 +24,7 @@
 [] event filtering
 [] marking of days
     [] and store this through sessions
+[] store google login throughout sessions
 [] be able to show multiple events ? [allocated holiday and work]
 
 ### code and bugs

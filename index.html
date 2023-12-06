@@ -294,6 +294,8 @@
                   let day = document.createElement("div");
                   day.className = classname;
                   day.innerHTML=text;
+                  day.customDataDate = text;
+                  day.customDataIsClicked = false;
                   day.id="w" + weekNumber + "d" + dayNumber;
                   day.style.color="rgba(0, 0, 0, 1);"
                   if(color!==0){
@@ -305,7 +307,22 @@
                   }
 
                   if(color===-1) day.style.color="#999999";
-                  
+
+                  // interactable
+                  if(0 <= dayNumber && dayNumber < 7 && weekNumber > 0){
+                    console.log("added onclick");
+                    day.style.cursor = "pointer";
+
+                    day.onclick = function(){
+                      if(!this.customDataIsClicked){
+                        this.innerHTML = "&#10004";
+                        this.customDataIsClicked = true;
+                      } else {
+                        this.innerHTML = this.customDataDate;
+                        this.customDataIsClicked = false;
+                      }
+                    };
+                  }
       
                   document.getElementById("w" + weekNumber).appendChild(day);
                 }

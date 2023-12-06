@@ -28,6 +28,7 @@
 
       var Settings = new Object();
       Settings.startAtJan = false; //whether to start calendar at today or january
+      Settings.fadePast = true; //whether to show past days different to other days. 
 
       var eventPool = new Object();
 
@@ -150,12 +151,25 @@
         xhr.open('GET', callstring);
         xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
         xhr.send();
-        xhr.onload = function() {
-          // console.log(`Loaded: ${xhr.status} ${xhr.response}`);
-          let returnedEvents = JSON.parse(xhr.response);
-          gatherEvents(returnedEvents);
+
+        let badRequest = function(){
+          console.log("BAD REQUEST");
           drawCalendar();
+        }
+
+        xhr.onload = function() {
+          try {
+            // console.log(`Loaded: ${xhr.status} ${xhr.response}`);
+            let returnedEvents = JSON.parse(xhr.response);
+            gatherEvents(returnedEvents);
+            drawCalendar();
+          } catch(e) {
+            console.log("caught error: " + e);
+            badRequest();
+          }
         };
+        xhr.onerror = badRequest();
+        
       }
     </script>
     
@@ -238,7 +252,17 @@
 
               <div class="tile is-4 is-child box">
                 <p class="title">Controls</p>
-                <button class="button" onclick="Settings.startAtJan=!Settings.startAtJan;loadCalendar();">Start at 1 jan</button>
+                <div>
+                  <label class="checkbox">
+                    <input type="checkbox" onclick="Settings.startAtJan=this.checked;loadCalendar();$('#btnSetFade').attr('disabled', !this.checked);"> Start at 1 jan
+                  </label>
+                </div>
+                <div>
+                  &nbsp;&nbsp;
+                  <label class="checkbox" id="lblSetFade">
+                    <input type="checkbox" id="btnSetFade" onclick="if(!this.disabled){Settings.fadePast=this.checked;loadCalendar()}" checked disabled> Fade past days
+                  </label>
+                </div>
               </div>
 
               <div class="tile is-4 is-child box" style="visibility:hidden">
@@ -275,7 +299,7 @@
                   if(color!==0){
                     day.style.backgroundColor = Colors.eventById[color];
 
-                    if(isPast){
+                    if(isPast && Settings.fadePast){
                       day.style.backgroundColor = Colors.scaleLightness(Colors.eventById[color], 4);
                     }
                   }

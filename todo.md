@@ -1,6 +1,4 @@
 # Todo
-[x] format calendar properly
-[x] clean code
 [] mouseover event summary
 
 
@@ -19,14 +17,18 @@
 [] settings
     [] color schemes
     [x] starting date 
+    [x] fade past days
 [x] current year
 [] future & past years
 [/] automatic event type recognition and colouring
 [] event filtering
+[] marking of days
+    [] and store this through sessions
 [] be able to show multiple events ? [allocated holiday and work]
 
 ### code and bugs
 [] favicon not always found. prob async loading
 [] onload of gsi not always found
 [] Use modern js, api and callbacks
+[] jquery get request
 [x] Colors module

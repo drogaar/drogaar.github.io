@@ -57,6 +57,10 @@
         return Date.UTC(datetime.getFullYear(), datetime.getMonth(), datetime.getDate());
       }
 
+      function date2str(date){
+        return date.toISOString().split("T")[0];
+      }
+
       function getEvent(datetime){
         let datestr = datetime.getDate() + "-" + (datetime.getMonth()+1) + "-" + datetime.getFullYear();
         if(datestr in eventPool){
@@ -290,12 +294,10 @@
                   document.getElementById("planning_auto").appendChild(week);
                 }
       
-                function addDay(weekNumber, dayNumber, text, classname="day", color=0, isPast=false){
+                function addDay(weekNumber, dayNumber, text, datestring, classname="day", color=0, isPast=false, user="default"){
                   let day = document.createElement("div");
                   day.className = classname;
-                  day.innerHTML=text;
                   day.customDataDate = text;
-                  day.customDataIsClicked = false;
                   day.id="w" + weekNumber + "d" + dayNumber;
                   day.style.color="rgba(0, 0, 0, 1);"
                   if(color!==0){
@@ -308,6 +310,15 @@
 
                   if(color===-1) day.style.color="#999999";
 
+                  let localKey = user + "&" + datestring;
+
+                  day.customDataIsClicked = false;
+                  day.innerHTML=text;
+                  if(localStorage.getItem(localKey) > 0){ 
+                    day.customDataIsClicked = true;
+                    day.innerHTML="&#10004";
+                  }
+
                   // interactable
                   if(0 <= dayNumber && dayNumber < 7 && weekNumber > 0){
                     console.log("added onclick");
@@ -317,11 +328,15 @@
                       if(!this.customDataIsClicked){
                         this.innerHTML = "&#10004";
                         this.customDataIsClicked = true;
+                        localStorage.setItem(localKey, 1);
                       } else {
                         this.innerHTML = this.customDataDate;
                         this.customDataIsClicked = false;
+                        localStorage.setItem(localKey, 0);
                       }
                     };
+                  } else {
+                    day.style.cursor = "default";
                   }
       
                   document.getElementById("w" + weekNumber).appendChild(day);
@@ -361,18 +376,18 @@
       
                   // Calendar Header
                   addWeek(-2);
-                  addDay(-2, -1, "", classname="day_hspace");//Month
+                  addDay(-2, -1, "", "", classname="day_hspace");//Month
                   for(let i=0;i<7;i++) addDay(-2, i, Weekdays[i], classname="day", color=-1);
-                  addDay(-2, 7, "week", classname="day", color=-1);
+                  addDay(-2, 7, "week", "", classname="day", color=-1);
       
                   for(let w=0; w<52; w++){
                     addWeek(w);
-                    addDay(w, -1, "", classname="day_hspace");
+                    addDay(w, -1, "", "", classname="day_hspace");
       
                     starting_weekday = (current_date.getDay() - 1) % 7;
                     for(let d=0; d<7; d++){
                       if(w===0 && d < starting_weekday){//skip days of first week when current day not being the first of the week
-                        addDay(w, d, "", classname="day_hspace");
+                        addDay(w, d, "", "", classname="day_hspace");
                         continue;
                       }
   
@@ -381,7 +396,7 @@
                       let isPast=false;
                       if(utc(future_date) < utc(new Date())) isPast = true;
 
-                      addDay(w, d, future_date.getDate(), classname="day", color=colId, isPast);
+                      addDay(w, d, future_date.getDate(), date2str(future_date), classname="day", color=colId, isPast);
                       
                       if(d===3 && 0 < future_date.getDate() && future_date.getDate() <= 7){
                         function getBbx(id) {return document.getElementById(id).getBoundingClientRect();}
@@ -389,7 +404,7 @@
                       }
                     }
   
-                    addDay(w, 7, (w + current_week) % 52, classname="day", color=-1);//week
+                    addDay(w, 7, (w + current_week) % 52, "", classname="day", color=-1);//week
                   }
                 }
       

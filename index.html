@@ -142,8 +142,7 @@
 
           drawLegend(colDescriptors);
         }
-
-        var xhr = new XMLHttpRequest();
+        
         let timeMin = new Date();
         if(Settings.startAtJan){
           timeMin = (new Date(new Date().getFullYear(), 0, 1));
@@ -152,6 +151,7 @@
         let callstring = "https://www.googleapis.com/calendar/v3/calendars/primary/events?timeMin=" + timeMin.toISOString() + "&timeMax=" + timeMax.toISOString() + "&maxResults=1500&singleEvents=True";
         console.log("Callstring: " + callstring);
         
+        var xhr = new XMLHttpRequest();
         xhr.open('GET', callstring);
         xhr.setRequestHeader('Authorization', 'Bearer ' + access_token);
         xhr.send();
@@ -161,6 +161,7 @@
           drawCalendar();
         }
 
+        xhr.onerror = badRequest();
         xhr.onload = function() {
           try {
             // console.log(`Loaded: ${xhr.status} ${xhr.response}`);
@@ -172,8 +173,6 @@
             badRequest();
           }
         };
-        xhr.onerror = badRequest();
-        
       }
     </script>
     

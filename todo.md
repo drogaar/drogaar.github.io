@@ -31,5 +31,4 @@
 [] favicon not always found. prob async loading
 [] onload of gsi not always found
 [] Use modern js, api and callbacks
-[] jquery get request
 [x] Colors module
